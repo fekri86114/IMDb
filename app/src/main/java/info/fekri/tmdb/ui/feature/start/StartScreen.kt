@@ -1,5 +1,6 @@
 package info.fekri.tmdb.ui.feature.start
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,7 @@ import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
 import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.MyScreens
+import info.fekri.tmdb.util.NetworkChecker
 
 @Preview(showBackground = true)
 @Composable
@@ -45,33 +48,63 @@ fun StartScreen() {
     val uiController = rememberSystemUiController()
     SideEffect { uiController.setStatusBarColor(CoverBlue) }
     val navigation = getNavController()
+    val context = LocalContext.current
 
-    Box(modifier = Modifier.fillMaxSize().padding(vertical = 8.dp), contentAlignment = Alignment.TopCenter) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 8.dp),
+        contentAlignment = Alignment.TopCenter
+    ) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-                Spacer(modifier  = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-                ShowHelloAnim()
+            ShowHelloAnim()
 
-                Column {
-                    StartContent("Let's start normally :-)") {
+            Column {
+                StartContent("Let's start normally :-)") {
+                    if (NetworkChecker(context).isInternetConnected) {
                         navigation.navigate(MyScreens.MainScreen.route)
-                    }
-                    StartContent("Let's search movie") {
-                        navigation.navigate(MyScreens.SearchScreen.route)
-                    }
-                    StartContent("You choose :-)") {
-                        navigation.navigate(MyScreens.MainScreen.route)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Please, check your Internet Connection!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
-
+                StartContent("Let's search movie") {
+                    if (NetworkChecker(context).isInternetConnected) {
+                        navigation.navigate(MyScreens.SearchScreen.route)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Please, check your Internet Connection!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                StartContent("You choose :-)") {
+                    if (NetworkChecker(context).isInternetConnected) {
+                        navigation.navigate(MyScreens.MainScreen.route)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Please, check your Internet Connection!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             }
+
+        }
 
     }
 }
