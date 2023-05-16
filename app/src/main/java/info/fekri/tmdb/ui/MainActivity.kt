@@ -1,7 +1,6 @@
 package info.fekri.tmdb.ui
 
 import android.os.Bundle
-import android.provider.Telephony.Threads
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,11 +16,9 @@ import info.fekri.tmdb.ui.theme.MainAppTheme
 import dev.burnoo.cokoin.Koin
 import dev.burnoo.cokoin.navigation.KoinNavHost
 import info.fekri.tmdb.di.myModules
-import info.fekri.tmdb.ui.feature.main.MainScreen
-import info.fekri.tmdb.ui.feature.start.StartScreen
+import info.fekri.tmdb.ui.features.StartScreen
 import info.fekri.tmdb.ui.theme.BackgroundMain
 import info.fekri.tmdb.util.MyScreens
-import okhttp3.internal.wait
 import org.koin.android.ext.koin.androidContext
 
 class MainActivity : ComponentActivity() {
@@ -79,6 +76,12 @@ fun IMDbUi() {
 fun SearchScreen() {
 
 }
+
+@Composable
+fun MainScreen() {
+
+}
+
 
 @Composable
 fun DetailScreen() {
