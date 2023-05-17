@@ -1,9 +1,7 @@
 package info.fekri.tmdb.ui.feature.main
 
-import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.Surface
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -30,33 +28,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
+import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.tmdb.R
-import info.fekri.tmdb.ui.theme.BackgroundMain
+import info.fekri.tmdb.model.data.QueryResult
 import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
-import info.fekri.tmdb.ui.theme.MainAppTheme
 import info.fekri.tmdb.ui.theme.Shapes
 import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.NetworkChecker
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun MainScreenPreview() {
-    MainAppTheme {
-        Surface(color = BackgroundMain, modifier = Modifier.fillMaxSize()) {
-            MovieActionItem()
-        }
-    }
-}
+import info.fekri.tmdb.util.POSTER_BASE_URL
+import info.fekri.tmdb.util.styleLimitText
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MainScreen() {
@@ -64,55 +55,111 @@ fun MainScreen() {
     val navigation = getNavController()
     val uiController = rememberSystemUiController()
     SideEffect { uiController.setStatusBarColor(Blue) }
+    val viewModel =
+        getNavViewModel<MainViewModel>(parameters = { parametersOf(NetworkChecker(context).isInternetConnected) })
 
-    Box {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = 16.dp)
-        ) {
-            MainTopToolbar {
-                navigation.navigate(MyScreens.SearchScreen.route)
-            }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 16.dp)
+    ) {
+        if (viewModel.showProgress.value) LinearProgressIndicator(
+            modifier = Modifier.fillMaxWidth(), color = Blue
+        )
 
-            Column(
-                modifier = Modifier.padding(top = 16.dp, start = 8.dp)
-            ) {
-                Text(
-                    text = "Actions",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WhiteCover
-                )
-                MovieActionItemBar()
-            }
-
-            Column(
-                modifier = Modifier.padding(top = 24.dp, start = 8.dp)
-            ) {
-                Text(
-                    text = "Animations",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WhiteCover
-                )
-                MovieActionItemBar()
-            }
-
-            Column(
-                modifier = Modifier.padding(top = 24.dp, start = 8.dp)
-            ) {
-                Text(
-                    text = "Romantic",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WhiteCover,
-                )
-                MovieActionItemBar()
-            }
-
+        MainTopToolbar {
+            navigation.navigate(MyScreens.SearchScreen.route)
         }
+
+        Column(
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text(
+                text = "Actions",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = WhiteCover,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+            MovieActionItemBar(viewModel.actionMovies.value) { id ->
+                if (NetworkChecker(context).isInternetConnected) {
+
+                    navigation.navigate(MyScreens.DetailScreen.route + "/" + id)
+
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Please, check your Internet Connection!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+
+    }
+
+}
+
+@Composable
+fun MovieActionItemBar(data: List<QueryResult>, onMovieItemClicked: (Int) -> Unit) {
+
+    LazyRow(
+        modifier = Modifier.padding(top = 16.dp, start = 0.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp)
+    ) {
+
+        items(data.size) {
+            MovieActionItem(data[it], onMovieItemClicked)
+        }
+
+    }
+
+}
+
+@Composable
+fun MovieActionItem(data: QueryResult, onMovieItemClicked: (Int) -> Unit) {
+
+    Card(
+        modifier = Modifier
+            .padding(start = 8.dp)
+            .clickable {
+                onMovieItemClicked.invoke(data.id)
+            },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+        backgroundColor = CoverBlue
+    ) {
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            AsyncImage(
+                model = POSTER_BASE_URL + data.posterPath,
+                contentDescription = null,
+                modifier = Modifier.size(180.dp),
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.TopCenter
+            )
+            Column(
+                modifier = Modifier.padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = styleLimitText(data.title, 10),
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    ),
+                    maxLines = 1
+                )
+                Text(
+                    text = data.releaseDate,
+                    style = TextStyle(fontSize = 14.sp, color = WhiteCover),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+        }
+
     }
 
 }
@@ -124,12 +171,22 @@ fun MainTopToolbar(onSearchClicked: () -> Unit) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
 
-    val paddingTop =
-        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 320.dp else 110.dp
     TopAppBar(
         elevation = 0.dp,
         backgroundColor = Blue,
-        title = { Text(text = "IMDb Movies", modifier = Modifier.padding(start = paddingTop)) },
+        navigationIcon = {
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.ic_launcher_foreground
+                ),
+                contentDescription = null
+            )
+        },
+        title = {
+            Text(
+                text = "IMDb Movies"
+            )
+        },
         actions = {
 
             IconButton(onClick = {
@@ -152,55 +209,3 @@ fun MainTopToolbar(onSearchClicked: () -> Unit) {
     )
 }
 
-// -------------------------------------------------
-
-@Composable
-fun MovieActionItemBar() {
-
-    LazyRow(modifier = Modifier.padding(top = 16.dp), contentPadding = PaddingValues(end = 14.dp)) {
-
-        items(5) {
-            MovieActionItem()
-        }
-
-    }
-
-}
-
-@Composable
-fun MovieActionItem() {
-
-    Card(
-        modifier = Modifier
-            .padding(start = 9.dp)
-            .clickable { },
-        elevation = 4.dp,
-        shape = Shapes.medium,
-        backgroundColor = CoverBlue
-    ) {
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            AsyncImage(
-                model = R.drawable.img_jumanji,
-                contentDescription = null,
-                modifier = Modifier.size(180.dp),
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.TopCenter
-            )
-            Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "Jumanji",
-                    style = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Medium, color = Color.White),
-                    maxLines = 1
-                )
-                Text(
-                    text = "2016",
-                    style = TextStyle(fontSize = 14.sp, color = WhiteCover),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-        }
-
-    }
-
-}

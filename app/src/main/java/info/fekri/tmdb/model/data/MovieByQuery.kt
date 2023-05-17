@@ -1,19 +1,20 @@
 package info.fekri.tmdb.model.data
 
 import com.google.gson.annotations.SerializedName
+import android.os.Parcelable
 
-data class PopularMovie(
+data class MovieByQuery(
     @SerializedName("page")
     val page: Int,
     @SerializedName("results")
-    val results: List<MovieResult>,
+    val results: List<QueryResult>,
     @SerializedName("total_pages")
     val totalPages: Int,
     @SerializedName("total_results")
     val totalResults: Int
 )
 
-data class MovieResult(
+data class QueryResult(
     @SerializedName("adult")
     val adult: Boolean,
     @SerializedName("backdrop_path")
