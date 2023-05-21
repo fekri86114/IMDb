@@ -19,7 +19,9 @@ import info.fekri.tmdb.ui.theme.MainAppTheme
 import dev.burnoo.cokoin.Koin
 import dev.burnoo.cokoin.navigation.KoinNavHost
 import info.fekri.tmdb.di.myModules
+import info.fekri.tmdb.ui.feature.detail.DetailScreen
 import info.fekri.tmdb.ui.feature.main.MainScreen
+import info.fekri.tmdb.ui.feature.search.SearchScreen
 import info.fekri.tmdb.ui.feature.start.StartScreen
 import info.fekri.tmdb.ui.theme.BackgroundMain
 import info.fekri.tmdb.util.KEY_MOVIE_ITEM
@@ -81,14 +83,4 @@ fun IMDbUi() {
             SearchScreen()
         }
     }
-}
-
-@Composable
-fun SearchScreen() {
-
-}
-
-@Composable
-fun DetailScreen(id: Int) {
-
 }

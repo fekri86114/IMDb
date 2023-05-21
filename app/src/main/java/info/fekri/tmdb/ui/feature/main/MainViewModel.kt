@@ -3,9 +3,7 @@ package info.fekri.tmdb.ui.feature.main
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import info.fekri.tmdb.model.data.MovieByQuery
 import info.fekri.tmdb.model.data.QueryResult
-import info.fekri.tmdb.model.net.ApiService
 import info.fekri.tmdb.model.repository.main.MainRepository
 import info.fekri.tmdb.util.coroutineExceptionHandler
 import kotlinx.coroutines.async
@@ -16,9 +14,9 @@ class MainViewModel(
     private val mainRepository: MainRepository,
     isInternetConnected: Boolean
 ) : ViewModel() {
-    val actionMovies = mutableStateOf(listOf<QueryResult>())
-    val animationMovies = mutableStateOf(listOf<QueryResult>())
-    val mysteryMovies = mutableStateOf(listOf<QueryResult>())
+    val actionMovies = mutableStateOf<List<QueryResult>>(listOf())
+    val animationMovies = mutableStateOf<List<QueryResult>>(listOf())
+    val mysteryMovies = mutableStateOf<List<QueryResult>>(listOf())
     val showProgress = mutableStateOf(false)
 
     init {
@@ -26,12 +24,10 @@ class MainViewModel(
     }
 
     private fun refreshDataFromNet(isInternetConnected: Boolean) {
-
         viewModelScope.launch(coroutineExceptionHandler) {
-
             if (isInternetConnected) {
                 showProgress.value = true
-                delay(1200)
+                delay(2000)
 
                 // get data from net
                 async {
@@ -44,9 +40,7 @@ class MainViewModel(
 
                 showProgress.value = false
             }
-
         }
-
     }
 
     private fun updateData(
@@ -60,6 +54,5 @@ class MainViewModel(
         mysteryMovies.value = mysteries
 
     }
-
 
 }
