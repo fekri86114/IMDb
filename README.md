@@ -7,23 +7,23 @@ You can watch and know movies with this application :-)
 
 *Developed with:*
 
-  *Jetpack-Compose🔥😍*
+  * *Jetpack-Compose🔥😍*
   
-  *LiveData components*
+  * *LiveData components*
   
-  *Coil*
+  * *Coil*
   
-  *koin*
+  * *koin*
   
-  *kotlin coroutines*
+  * *kotlin coroutines*
   
-  *retrofit*
+  * *retrofit*
   
-  *room*
+  * *room*
   
-  *lottie animations*
+  * *lottie animations*
   
-  *...*
+  * *...*
   
   ---
 
