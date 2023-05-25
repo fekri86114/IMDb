@@ -1,14 +1,11 @@
 package info.fekri.tmdb.ui.feature.main
 
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,18 +15,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,21 +29,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
-import info.fekri.tmdb.R
 import info.fekri.tmdb.model.data.QueryResult
-import info.fekri.tmdb.ui.theme.BackgroundMain
 import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
 import info.fekri.tmdb.ui.theme.Shapes
@@ -60,7 +47,6 @@ import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.NetworkChecker
 import info.fekri.tmdb.util.POSTER_BASE_URL
 import info.fekri.tmdb.util.styleLimitedText
-import kotlinx.coroutines.delay
 import org.koin.core.parameter.parametersOf
 
 @Composable
@@ -175,7 +161,9 @@ fun MovieActionItemBar(data: List<QueryResult>, onMovieItemClicked: (Int) -> Uni
         items(data.size) {
             println("\tPOSTER URL = $POSTER_BASE_URL${data[it].posterPath}")
 
-            MovieActionItem(data[it], onMovieItemClicked)
+            MovieActionItem(data[it]) { id ->
+                onMovieItemClicked.invoke(id)
+            }
         }
 
     }
@@ -217,7 +205,7 @@ fun MovieActionItem(data: QueryResult, onMovieItemClicked: (Int) -> Unit) {
                 ) {
 
                     Text(
-                        text = styleLimitedText(data.title, 10),
+                        text = styleLimitedText(data.title, 18),
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,

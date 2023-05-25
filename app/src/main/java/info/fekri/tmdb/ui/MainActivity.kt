@@ -1,7 +1,6 @@
 package info.fekri.tmdb.ui
 
 import android.os.Bundle
-import android.provider.Telephony.Threads
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,9 +23,8 @@ import info.fekri.tmdb.ui.feature.main.MainScreen
 import info.fekri.tmdb.ui.feature.search.SearchScreen
 import info.fekri.tmdb.ui.feature.start.StartScreen
 import info.fekri.tmdb.ui.theme.BackgroundMain
-import info.fekri.tmdb.util.KEY_MOVIE_ITEM
+import info.fekri.tmdb.util.KEY_MOVIE_ARG
 import info.fekri.tmdb.util.MyScreens
-import okhttp3.internal.wait
 import org.koin.android.ext.koin.androidContext
 
 class MainActivity : ComponentActivity() {
@@ -72,12 +70,12 @@ fun IMDbUi() {
             MainScreen()
         }
         composable(
-            route = MyScreens.DetailScreen.route + "/" + "{$KEY_MOVIE_ITEM}",
-            arguments = listOf(navArgument(KEY_MOVIE_ITEM) {
+            route = MyScreens.DetailScreen.route+ "/{$KEY_MOVIE_ARG}",
+            arguments = listOf(navArgument(KEY_MOVIE_ARG) {
                 type = NavType.IntType
             })
         ) {
-            DetailScreen(it.arguments!!.getInt(KEY_MOVIE_ITEM, 0))
+            DetailScreen(it.arguments!!.getInt(KEY_MOVIE_ARG))
         }
         composable(route = MyScreens.SearchScreen.route) {
             SearchScreen()

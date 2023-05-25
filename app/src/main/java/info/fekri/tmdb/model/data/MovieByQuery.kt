@@ -15,12 +15,8 @@ data class MovieByQuery(
 )
 
 data class QueryResult(
-    @SerializedName("adult")
-    val adult: Boolean,
     @SerializedName("backdrop_path")
     val backdropPath: String,
-    @SerializedName("genre_ids")
-    val genreIds: List<Int>,
     @SerializedName("id")
     val id: Int,
     @SerializedName("original_language")

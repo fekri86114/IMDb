@@ -51,30 +51,38 @@ fun StartScreen() {
     SideEffect { uiController.setStatusBarColor(CoverBlue) }
     val navigation = getNavController()
     val context = LocalContext.current
+    val locale = context.resources.configuration.locale.displayCountry
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 8.dp),
-        contentAlignment = Alignment.TopCenter
+            .padding(vertical = 8.dp)
     ) {
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(0.dp))
-
             ShowHelloAnim()
+
+            Spacer(modifier = Modifier.height(80.dp))
 
             Column {
                 StartContent("Let's start normally :-)") {
                     if (NetworkChecker(context).isInternetConnected) {
-                        navigation.navigate(MyScreens.MainScreen.route)
+                        if (locale != "IRN") {
+                            navigation.navigate(MyScreens.MainScreen.route)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Unfortunately, you should use an IP Changer!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     } else {
                         Toast.makeText(
                             context,
@@ -83,9 +91,19 @@ fun StartScreen() {
                         ).show()
                     }
                 }
-                StartContent("Let's search movie") {
+
+                StartContent("Let's search a movie") {
+
                     if (NetworkChecker(context).isInternetConnected) {
-                        navigation.navigate(MyScreens.SearchScreen.route)
+                        if (locale != "IRN") {
+                            navigation.navigate(MyScreens.SearchScreen.route)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Unfortunately, you should use an IP Changer!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     } else {
                         Toast.makeText(
                             context,
@@ -94,9 +112,18 @@ fun StartScreen() {
                         ).show()
                     }
                 }
+
                 StartContent("You choose :-)") {
                     if (NetworkChecker(context).isInternetConnected) {
-                        navigation.navigate(MyScreens.MainScreen.route)
+                        if (locale != "IRN") {
+                            navigation.navigate(MyScreens.MainScreen.route)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Unfortunately, you should use an IP Changer!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     } else {
                         Toast.makeText(
                             context,
