@@ -5,6 +5,7 @@ import info.fekri.tmdb.model.data.MovieById
 const val API_KEY = "f882fe7e318f300420b26bdf6e0db009"
 const val BASE_URL = "https://api.themoviedb.org/3/"
 const val POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500"
+const val IP_API_KEY = "875aa28c376e8f7145686757e6b567a5"
 
 const val KEY_MOVIE_ARG = "movieItemClickedArg"
 

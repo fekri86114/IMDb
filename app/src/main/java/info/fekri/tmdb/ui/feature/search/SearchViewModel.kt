@@ -3,12 +3,9 @@ package info.fekri.tmdb.ui.feature.search
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import info.fekri.tmdb.model.data.MovieById
 import info.fekri.tmdb.model.net.ApiService
-import info.fekri.tmdb.model.repository.main.MainRepository
 import info.fekri.tmdb.util.EMPTY_MOVIE_BY_ID
 import info.fekri.tmdb.util.coroutineExceptionHandler
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

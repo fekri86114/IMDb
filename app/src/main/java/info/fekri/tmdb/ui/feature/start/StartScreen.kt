@@ -16,6 +16,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
+import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.tmdb.R
 import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
@@ -47,11 +49,18 @@ fun StartScreenPreview() {
 
 @Composable
 fun StartScreen() {
+    val viewModel = getNavViewModel<StartScreenViewModel>()
+    val ipAddress = viewModel.userIpAddress.value
+
+    LaunchedEffect(ipAddress) {
+        viewModel.fetchUserIpAddress()
+        viewModel.checkUserLocation(ipAddress)
+    }
+
     val uiController = rememberSystemUiController()
     SideEffect { uiController.setStatusBarColor(CoverBlue) }
     val navigation = getNavController()
     val context = LocalContext.current
-    val locale = context.resources.configuration.locale.displayCountry
 
     Box(
         modifier = Modifier
@@ -74,62 +83,48 @@ fun StartScreen() {
             Column {
                 StartContent("Let's start normally :-)") {
                     if (NetworkChecker(context).isInternetConnected) {
-                        if (locale != "IRN") {
-                            navigation.navigate(MyScreens.MainScreen.route)
-                        } else {
+                        if (viewModel.isUserFromIran.value) {
                             Toast.makeText(
-                                context,
-                                "Unfortunately, you should use an IP Changer!",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                context, "Unfortunately, You should Use an API Changer!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Try Again Later!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            navigation.navigate(MyScreens.MainScreen.route)
                         }
                     } else {
-                        Toast.makeText(
-                            context,
-                            "Please, check your Internet Connection!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(context, "Please, check your Internet Connection!", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 StartContent("Let's search a movie") {
 
                     if (NetworkChecker(context).isInternetConnected) {
-                        if (locale != "IRN") {
-                            navigation.navigate(MyScreens.SearchScreen.route)
-                        } else {
+                        if (viewModel.isUserFromIran.value) {
                             Toast.makeText(
-                                context,
-                                "Unfortunately, you should use an IP Changer!",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                context, "Unfortunately, You should Use an API Changer!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Try Again Later!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            navigation.navigate(MyScreens.SearchScreen.route)
                         }
                     } else {
-                        Toast.makeText(
-                            context,
-                            "Please, check your Internet Connection!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(context, "Please, check your Internet Connection!", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 StartContent("You choose :-)") {
                     if (NetworkChecker(context).isInternetConnected) {
-                        if (locale != "IRN") {
-                            navigation.navigate(MyScreens.MainScreen.route)
-                        } else {
+                        if (viewModel.isUserFromIran.value) {
                             Toast.makeText(
-                                context,
-                                "Unfortunately, you should use an IP Changer!",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                context, "Unfortunately, You should Use an API Changer!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Try Again Later!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            val random = (0..1).random()
+                            if (random == 0)
+                                navigation.navigate(MyScreens.MainScreen.route)
+                            else
+                                navigation.navigate(MyScreens.SearchScreen.route)
                         }
                     } else {
-                        Toast.makeText(
-                            context,
-                            "Please, check your Internet Connection!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(context, "Please, check your Internet Connection!", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

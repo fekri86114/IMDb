@@ -9,6 +9,7 @@ import info.fekri.tmdb.model.repository.main.MainRepositoryImpl
 import info.fekri.tmdb.ui.feature.detail.DetailViewModel
 import info.fekri.tmdb.ui.feature.main.MainViewModel
 import info.fekri.tmdb.ui.feature.search.SearchViewModel
+import info.fekri.tmdb.ui.feature.start.StartScreenViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -23,4 +24,5 @@ val myModules = module {
     viewModel { (isNetConnected: Boolean) -> MainViewModel(get(), isNetConnected) }
     viewModel { SearchViewModel(get()) }
     viewModel { DetailViewModel(get()) }
+    viewModel { StartScreenViewModel() }
 }

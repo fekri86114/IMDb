@@ -1,16 +1,7 @@
 package info.fekri.tmdb.model.repository.main
 
-import android.content.SharedPreferences
-import info.fekri.tmdb.model.data.MovieById
 import info.fekri.tmdb.model.data.QueryResult
 import info.fekri.tmdb.model.net.ApiService
-import info.fekri.tmdb.util.CACHE_MOVIE_ID
-import info.fekri.tmdb.util.CACHE_MOVIE_IMG_BACK_URL
-import info.fekri.tmdb.util.CACHE_MOVIE_LANGUAGE
-import info.fekri.tmdb.util.CACHE_MOVIE_OVERVIEW
-import info.fekri.tmdb.util.CACHE_MOVIE_POPULARITY
-import info.fekri.tmdb.util.CACHE_MOVIE_RELEASE_DATE
-import info.fekri.tmdb.util.CACHE_MOVIE_TITLE
 
 class MainRepositoryImpl(
     private val apiService: ApiService

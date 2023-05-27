@@ -1,7 +1,6 @@
 package info.fekri.tmdb.model.data
 
 import com.google.gson.annotations.SerializedName
-import android.os.Parcelable
 
 data class MovieByQuery(
     @SerializedName("page")

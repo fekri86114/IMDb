@@ -80,7 +80,7 @@ fun MainScreen() {
                 color = WhiteCover,
                 modifier = Modifier.padding(start = 8.dp)
             )
-            MovieActionItemBar(viewModel.actionMovies.value) { id ->
+            MovieActionItemBar(ArrayList(viewModel.actionMovies.value)) { id ->
                 if (NetworkChecker(context).isInternetConnected) {
 
                     navigation.navigate(MyScreens.DetailScreen.route + "/" + id)
@@ -101,7 +101,7 @@ fun MainScreen() {
                 color = WhiteCover,
                 modifier = Modifier.padding(start = 8.dp, top = 16.dp)
             )
-            MovieActionItemBar(viewModel.animationMovies.value) { id ->
+            MovieActionItemBar(ArrayList(viewModel.animationMovies.value)) { id ->
                 if (NetworkChecker(context).isInternetConnected) {
 
                     navigation.navigate(MyScreens.DetailScreen.route + "/" + id)
@@ -122,7 +122,7 @@ fun MainScreen() {
                 color = WhiteCover,
                 modifier = Modifier.padding(start = 8.dp, top = 16.dp)
             )
-            MovieActionItemBar(viewModel.mysteryMovies.value) { id ->
+            MovieActionItemBar(ArrayList(viewModel.mysteryMovies.value)) { id ->
                 if (NetworkChecker(context).isInternetConnected) {
 
                     navigation.navigate(MyScreens.DetailScreen.route + "/" + id)
@@ -151,7 +151,7 @@ fun MainScreen() {
 // -------------------------------------------------
 
 @Composable
-fun MovieActionItemBar(data: List<QueryResult>, onMovieItemClicked: (Int) -> Unit) {
+fun MovieActionItemBar(data: ArrayList<QueryResult>, onMovieItemClicked: (Int) -> Unit) {
 
     LazyRow(
         modifier = Modifier.padding(top = 8.dp, start = 0.dp),

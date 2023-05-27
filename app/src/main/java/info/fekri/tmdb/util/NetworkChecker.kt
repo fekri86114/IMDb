@@ -7,45 +7,45 @@ import android.os.Build
 
 class NetworkChecker(private val context: Context) {
 
-    val isInternetConnected :Boolean
-    get() {
-        var result = false
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val isInternetConnected: Boolean
+        get() {
+            var result = false
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-            val networkCapabilities = connectivityManager.activeNetwork ?: return false
-            val myNetwork = connectivityManager.getNetworkCapabilities( networkCapabilities ) ?: return false
+                val networkCapabilities = connectivityManager.activeNetwork ?: return false
+                val myNetwork =
+                    connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
 
-            result = when {
+                result = when {
 
-                myNetwork.hasTransport( NetworkCapabilities.TRANSPORT_WIFI ) -> true
+                    myNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
 
-                myNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                    myNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
 
-                myNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                    myNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
 
-                else -> false
+                    else -> false
 
+                }
+
+            } else {
+                result = when (connectivityManager.activeNetworkInfo?.type) {
+
+                    ConnectivityManager.TYPE_WIFI -> true
+
+                    ConnectivityManager.TYPE_MOBILE -> true
+
+                    ConnectivityManager.TYPE_ETHERNET -> true
+
+                    else -> false
+                }
             }
 
+            return result
         }
-
-        else {
-            result = when (connectivityManager.activeNetworkInfo?.type) {
-
-                ConnectivityManager.TYPE_WIFI -> true
-
-                ConnectivityManager.TYPE_MOBILE -> true
-
-                ConnectivityManager.TYPE_ETHERNET -> true
-
-                else -> false
-            }
-        }
-
-        return result
-    }
 
     val isEthernetConnected: Boolean
         get() {
@@ -56,7 +56,8 @@ class NetworkChecker(private val context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
                 val networkCapabilities = connectivityManager.activeNetwork ?: return false
-                val myNetwork = connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+                val myNetwork =
+                    connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
 
                 result = when {
                     myNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> false
