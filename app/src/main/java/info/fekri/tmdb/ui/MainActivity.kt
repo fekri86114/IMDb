@@ -27,6 +27,7 @@ import info.fekri.tmdb.ui.feature.start.StartScreen
 import info.fekri.tmdb.ui.theme.BackgroundMain
 import info.fekri.tmdb.ui.theme.MainAppTheme
 import info.fekri.tmdb.util.KEY_MOVIE_ARG
+import info.fekri.tmdb.util.KEY_MOVIE_CATEGORY
 import info.fekri.tmdb.util.MyScreens
 import org.koin.android.ext.koin.androidContext
 
@@ -73,6 +74,14 @@ fun IMDbUi() {
             MainScreen()
         }
         composable(
+            route = MyScreens.CategoryScreen.route + "/$KEY_MOVIE_CATEGORY",
+            arguments = listOf(navArgument(KEY_MOVIE_CATEGORY) {
+                type = NavType.StringType
+            })
+        ) {
+            CategoryScreen(it.arguments!!.getString(KEY_MOVIE_CATEGORY)!!)
+        }
+        composable(
             route = MyScreens.DetailScreen.route + "/{$KEY_MOVIE_ARG}",
             arguments = listOf(navArgument(KEY_MOVIE_ARG) {
                 type = NavType.IntType
@@ -84,4 +93,9 @@ fun IMDbUi() {
             SearchScreen()
         }
     }
+}
+
+@Composable
+fun CategoryScreen(movieId: String) {
+
 }

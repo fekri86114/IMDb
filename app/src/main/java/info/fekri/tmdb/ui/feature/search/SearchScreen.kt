@@ -28,7 +28,6 @@ import info.fekri.tmdb.ui.theme.Blue
 fun SearchScreen() {
     val context = LocalContext.current
     val navigation = getNavController()
-    val viewModel = getNavViewModel<SearchViewModel>()
     val uiController = rememberSystemUiController()
     SideEffect { uiController.setStatusBarColor(Blue) }
 
@@ -36,13 +35,8 @@ fun SearchScreen() {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(bottom = 16.dp, end = 8.dp, start = 8.dp)
+            .padding(bottom = 16.dp)
     ) {
-        if (viewModel.showProgress.value) CircularProgressIndicator(
-            color = Blue,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            strokeCap = StrokeCap.Round
-        )
 
         SearchTopToolbar {
             navigation.popBackStack()

@@ -1,5 +1,7 @@
 package info.fekri.tmdb.model.data
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class MovieByQuery(
@@ -13,11 +15,15 @@ data class MovieByQuery(
     val totalResults: Int
 )
 
+@Entity("movie_table")
 data class QueryResult(
     @SerializedName("backdrop_path")
     val backdropPath: String,
+
+    @PrimaryKey
     @SerializedName("id")
     val id: Int,
+
     @SerializedName("original_language")
     val originalLanguage: String,
     @SerializedName("original_title")
