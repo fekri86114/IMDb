@@ -85,13 +85,22 @@ fun StartScreen() {
                     if (NetworkChecker(context).isInternetConnected) {
                         if (viewModel.isUserFromIran.value) {
                             Toast.makeText(
-                                context, "Unfortunately, You should Use an API Changer!", Toast.LENGTH_LONG).show()
+                                context,
+                                "Unfortunately, You should Use an API Changer!",
+                                Toast.LENGTH_LONG
+                            ).show()
                             Toast.makeText(context, "Try Again Later!", Toast.LENGTH_SHORT).show()
                         } else {
-                            navigation.navigate(MyScreens.MainScreen.route)
+                            navigation.navigate(MyScreens.MainScreen.route) {
+                                popUpTo(MyScreens.StartScreen.route)
+                            }
                         }
                     } else {
-                        Toast.makeText(context, "Please, check your Internet Connection!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Please, check your Internet Connection!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
@@ -100,13 +109,22 @@ fun StartScreen() {
                     if (NetworkChecker(context).isInternetConnected) {
                         if (viewModel.isUserFromIran.value) {
                             Toast.makeText(
-                                context, "Unfortunately, You should Use an API Changer!", Toast.LENGTH_LONG).show()
+                                context,
+                                "Unfortunately, You should Use an API Changer!",
+                                Toast.LENGTH_LONG
+                            ).show()
                             Toast.makeText(context, "Try Again Later!", Toast.LENGTH_SHORT).show()
                         } else {
-                            navigation.navigate(MyScreens.SearchScreen.route)
+                            navigation.navigate(MyScreens.SearchScreen.route) {
+                                popUpTo(MyScreens.StartScreen.route)
+                            }
                         }
                     } else {
-                        Toast.makeText(context, "Please, check your Internet Connection!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Please, check your Internet Connection!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
@@ -114,17 +132,28 @@ fun StartScreen() {
                     if (NetworkChecker(context).isInternetConnected) {
                         if (viewModel.isUserFromIran.value) {
                             Toast.makeText(
-                                context, "Unfortunately, You should Use an API Changer!", Toast.LENGTH_LONG).show()
+                                context,
+                                "Unfortunately, You should Use an API Changer!",
+                                Toast.LENGTH_LONG
+                            ).show()
                             Toast.makeText(context, "Try Again Later!", Toast.LENGTH_SHORT).show()
                         } else {
                             val random = (0..1).random()
                             if (random == 0)
-                                navigation.navigate(MyScreens.MainScreen.route)
+                                navigation.navigate(MyScreens.MainScreen.route) {
+                                    popUpTo(MyScreens.StartScreen.route)
+                                }
                             else
-                                navigation.navigate(MyScreens.SearchScreen.route)
+                                navigation.navigate(MyScreens.SearchScreen.route) {
+                                    popUpTo(MyScreens.StartScreen.route)
+                                }
                         }
                     } else {
-                        Toast.makeText(context, "Please, check your Internet Connection!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Please, check your Internet Connection!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }

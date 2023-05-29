@@ -18,9 +18,9 @@ interface ApiService {
         @Query("query") query: String
     ): MovieByQuery
 
-    // https://api.themoviedb.org/3/movie/MOVIE_ID?api_key=API_KEY -> by id
-    @GET("movie/{movie_id}")
-    suspend fun getMovieById(@Path("movie_id") movieId: Int): MovieById
+    // https://api.themoviedb.org/3/movie/<MOVIE_ID>?api_key=<API_KEY> -> by id
+//    @GET("movie/{movie_id}")
+//    suspend fun getMovieById(@Path("movie_id") movieId: Int): MovieById
 
 }
 
