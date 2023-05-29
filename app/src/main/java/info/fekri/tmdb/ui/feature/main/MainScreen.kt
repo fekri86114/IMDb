@@ -155,7 +155,7 @@ fun ProductItem() {
                 Text(
                     text = "2016-05-25",
                     style = TextStyle(
-                        fontSize = 14.sp,
+                        fontSize = 14.sp, // 404
                         fontWeight = FontWeight.Bold,
                         color = WhiteCover
                     ),
