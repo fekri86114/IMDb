@@ -1,29 +1,23 @@
 package info.fekri.tmdb.model.data
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-data class MovieByQuery(
+data class PopularMovieResponse(
     @SerializedName("page")
     val page: Int,
     @SerializedName("results")
-    val results: List<QueryResult>,
-    @SerializedName("total_pages")
-    val totalPages: Int,
-    @SerializedName("total_results")
-    val totalResults: Int
+    val populars: List<PopularMovie>,
 )
 
-@Entity("movie_table")
-data class QueryResult(
+data class PopularMovie(
+    @SerializedName("adult")
+    val adult: Boolean,
     @SerializedName("backdrop_path")
     val backdropPath: String,
-
-    @PrimaryKey
+    @SerializedName("genre_ids")
+    val genreIds: List<Int>,
     @SerializedName("id")
     val id: Int,
-
     @SerializedName("original_language")
     val originalLanguage: String,
     @SerializedName("original_title")
@@ -41,7 +35,7 @@ data class QueryResult(
     @SerializedName("video")
     val video: Boolean,
     @SerializedName("vote_average")
-    val voteAverage: Double,
+    val voteAverage: Int,
     @SerializedName("vote_count")
     val voteCount: Int
 )

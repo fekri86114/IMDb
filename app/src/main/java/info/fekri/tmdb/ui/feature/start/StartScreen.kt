@@ -61,7 +61,6 @@ fun StartScreen() {
     val uiController = rememberSystemUiController()
     SideEffect {
         uiController.setStatusBarColor(Blue)
-        uiController.setNavigationBarColor(Color.Transparent)
     }
     val navigation = getNavController()
     val context = LocalContext.current

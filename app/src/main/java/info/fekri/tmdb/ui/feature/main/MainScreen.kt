@@ -69,7 +69,6 @@ fun MainScreen() {
     val uiController = rememberSystemUiController()
     SideEffect {
         uiController.setStatusBarColor(Blue)
-        uiController.setNavigationBarColor(Color.Transparent)
     }
 
     Column(
