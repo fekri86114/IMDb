@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -26,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -62,10 +65,12 @@ fun MainScreenPreview() {
 
 @Composable
 fun MainScreen() {
-    val context = LocalContext.current
     val navigation = getNavController()
     val uiController = rememberSystemUiController()
-    SideEffect { uiController.setStatusBarColor(Blue) }
+    SideEffect {
+        uiController.setStatusBarColor(Blue)
+        uiController.setNavigationBarColor(Color.Transparent)
+    }
 
     Column(
         modifier = Modifier
@@ -85,7 +90,11 @@ fun MainScreen() {
 
         ProductSubject()
 
+        BigPictureAds()
+
         ProductSubject()
+
+        BigPictureAds()
 
         ProductSubject()
 
@@ -93,11 +102,30 @@ fun MainScreen() {
 
 }
 
+// ---------------------------------
+
+@Composable
+fun BigPictureAds() {
+
+    Image(
+        painter = painterResource(id = R.drawable.img_spider),
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(260.dp)
+            .padding(top = 32.dp, start = 16.dp, end = 16.dp)
+            .clip(Shapes.medium)
+            .clickable { /*HANDLE LATER*/ }
+    )
+
+}
+
 // -------------------------------------------------
 
 @Composable
 fun ProductSubject() {
-    
+
     Column(modifier = Modifier.padding(top = 32.dp)) {
         Text(
             text = "Popular",
@@ -108,13 +136,14 @@ fun ProductSubject() {
 
         ProductBar()
     }
-    
+
 }
 
 @Composable
 fun ProductBar() {
-    LazyRow(modifier = Modifier.padding(top = 16.dp),
-    contentPadding = PaddingValues(end = 16.dp)
+    LazyRow(
+        modifier = Modifier.padding(top = 16.dp),
+        contentPadding = PaddingValues(end = 16.dp)
     ) {
         items(10) {
             ProductItem()
@@ -124,7 +153,7 @@ fun ProductBar() {
 
 @Composable
 fun ProductItem() {
-    
+
     Card(
         modifier = Modifier
             .padding(start = 16.dp)
@@ -155,7 +184,7 @@ fun ProductItem() {
                 Text(
                     text = "2016-05-25",
                     style = TextStyle(
-                        fontSize = 14.sp, // 404
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = WhiteCover
                     ),
@@ -180,7 +209,7 @@ fun ProductItem() {
             }
         }
     }
-    
+
 }
 
 // --------------------------------------------------
