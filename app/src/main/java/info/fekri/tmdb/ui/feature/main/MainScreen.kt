@@ -3,22 +3,20 @@ package info.fekri.tmdb.ui.feature.main
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -32,19 +30,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import info.fekri.tmdb.R
 import info.fekri.tmdb.ui.theme.BackgroundMain
 import info.fekri.tmdb.ui.theme.Blue
+import info.fekri.tmdb.ui.theme.CoverBlue
+import info.fekri.tmdb.ui.theme.ItemBackground
 import info.fekri.tmdb.ui.theme.MainAppTheme
 import info.fekri.tmdb.ui.theme.Shapes
-import info.fekri.tmdb.util.EMPTY_QUERY_RESULT
+import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.MOVIE_CATEGORY_LIST
 import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.NetworkChecker
+import info.fekri.tmdb.util.styleLimitedText
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -79,21 +83,114 @@ fun MainScreen() {
             navigation.navigate(MyScreens.CategoryScreen.route + "/$it")
         }
 
-        MovieBar()
+        ProductSubject()
+
+        ProductSubject()
+
+        ProductSubject()
 
     }
 
 }
 
-@Composable
-fun MovieBar() {/*will complete later*/}
+// -------------------------------------------------
 
+@Composable
+fun ProductSubject() {
+    
+    Column(modifier = Modifier.padding(top = 32.dp)) {
+        Text(
+            text = "Popular",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        ProductBar()
+    }
+    
+}
+
+@Composable
+fun ProductBar() {
+    LazyRow(modifier = Modifier.padding(top = 16.dp),
+    contentPadding = PaddingValues(end = 16.dp)
+    ) {
+        items(10) {
+            ProductItem()
+        }
+    }
+}
+
+@Composable
+fun ProductItem() {
+    
+    Card(
+        modifier = Modifier
+            .padding(start = 16.dp)
+            .clickable { },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+        backgroundColor = CoverBlue
+    ) {
+        Column {
+            Image(
+                painter = painterResource(id = R.drawable.img_spider),
+                contentDescription = null,
+                modifier = Modifier.size(200.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = styleLimitedText("Spider Man", 12),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "2016-05-25",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = WhiteCover
+                    ),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Row {
+                    Text(
+                        text = "Rating: ",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = "8.4",
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = WhiteCover
+                        )
+                    )
+                }
+            }
+        }
+    }
+    
+}
+
+// --------------------------------------------------
 
 @Composable
 fun CategoryBar(categoryList: List<Pair<String, Int>>, onCategoryClicked: (String) -> Unit) {
 
     LazyRow(
-        modifier = Modifier.padding(top = 16.dp), contentPadding = PaddingValues(end = 8.dp)
+        modifier = Modifier.padding(top = 16.dp),
+        contentPadding = PaddingValues(end = 8.dp)
     ) {
         items(categoryList.size) {
             CategoryItem(categoryList[it], onCategoryClicked)
@@ -104,21 +201,22 @@ fun CategoryBar(categoryList: List<Pair<String, Int>>, onCategoryClicked: (Strin
 
 @Composable
 fun CategoryItem(subject: Pair<String, Int>, onCategoryClicked: (String) -> Unit) {
-    Card(
-        shape = CutCornerShape(topStart = 28.dp, bottomEnd = 8.dp),
-        modifier = Modifier.padding(horizontal = 8.dp),
-        backgroundColor = BackgroundMain
+    Column(
+        modifier = Modifier
+            .padding(start = 8.dp)
+            .clickable { onCategoryClicked.invoke(subject.first) },
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-                .clickable { onCategoryClicked.invoke(subject.first) },
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Surface(
+            shape = Shapes.medium,
+            color = ItemBackground
         ) {
             Image(
                 painter = painterResource(id = subject.second),
                 contentDescription = null,
-                modifier = Modifier.size(80.dp),
-                contentScale = ContentScale.Crop
+                modifier = Modifier
+                    .size(80.dp)
+                    .padding(16.dp)
             )
         }
     }
@@ -134,9 +232,7 @@ fun MainTopToolbar(onSearchClicked: () -> Unit) {
         elevation = 0.dp,
         backgroundColor = Blue,
         title = {
-            Text(
-                text = "IMDb Movies"
-            )
+            Text(text = "IMDb Movies")
         },
         actions = {
 
@@ -153,7 +249,7 @@ fun MainTopToolbar(onSearchClicked: () -> Unit) {
                 }
 
             }) {
-                Icon(imageVector = Icons.Default.Search, contentDescription = "Search movie")
+                Icon(imageVector = Icons.Default.Search, contentDescription = null)
             }
 
         }

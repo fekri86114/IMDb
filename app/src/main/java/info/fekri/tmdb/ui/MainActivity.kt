@@ -74,7 +74,7 @@ fun IMDbUi() {
             MainScreen()
         }
         composable(
-            route = MyScreens.CategoryScreen.route + "/$KEY_MOVIE_CATEGORY",
+            route = MyScreens.CategoryScreen.route + "/" + KEY_MOVIE_CATEGORY,
             arguments = listOf(navArgument(KEY_MOVIE_CATEGORY) {
                 type = NavType.StringType
             })
