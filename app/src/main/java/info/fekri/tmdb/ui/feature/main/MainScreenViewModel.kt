@@ -25,16 +25,16 @@ class MainScreenViewModel(
     private fun refreshAllDataFromNet(isNetConnected: Boolean) {
 
         viewModelScope.launch(coroutineExceptionHandler) {
-            if (isNetConnected)
+            if (isNetConnected) {
                 showProgress.value = true
 
-            val newDataProducts = async { productRepository.getAllProducts(isNetConnected) }
-            val newDataPopular = async { productRepository.getAllPopular(isNetConnected) }
+                val newDataProducts = async { productRepository.getAllProducts(isNetConnected) }
+                val newDataPopular = async { productRepository.getAllPopular(isNetConnected) }
 
-            updateData(newDataProducts.await(), newDataPopular.await())
+                updateData(newDataProducts.await(), newDataPopular.await())
 
-            showProgress.value = false
-
+                showProgress.value = false
+            }
         }
 
     }

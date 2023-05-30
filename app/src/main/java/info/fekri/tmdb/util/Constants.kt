@@ -26,7 +26,7 @@ val EMPTY_QUERY_RESULT = QueryResult(
     0
 )
 
-val MOVIE_CATEGORY_LIST: List<Pair<String, Int>> = listOf(
+val CATEGORY_LIST: List<Pair<String, Int>> = listOf(
     Pair("Action", R.drawable.img_action),
     Pair("Comedy", R.drawable.img_comedy),
     Pair("Drama", R.drawable.img_drama),

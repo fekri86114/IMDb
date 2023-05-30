@@ -20,7 +20,7 @@ interface ApiService {
     @GET("search/movie")
     suspend fun getAllProducts(
         @Query("api_key") apiKey: String = API_KEY,
-        @Query("query") query: String = "Fantasy"
+        @Query("query") query: String = "Action"
     ): ProductResponse
 
     // https://api.themoviedb.org/3/movie/popular?api_key=<API_KEY>

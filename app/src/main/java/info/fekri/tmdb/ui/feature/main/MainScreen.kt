@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -26,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,8 +41,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
+import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.tmdb.R
 import info.fekri.tmdb.ui.theme.BackgroundMain
 import info.fekri.tmdb.ui.theme.Blue
@@ -48,10 +56,11 @@ import info.fekri.tmdb.ui.theme.ItemBackground
 import info.fekri.tmdb.ui.theme.MainAppTheme
 import info.fekri.tmdb.ui.theme.Shapes
 import info.fekri.tmdb.ui.theme.WhiteCover
-import info.fekri.tmdb.util.MOVIE_CATEGORY_LIST
+import info.fekri.tmdb.util.CATEGORY_LIST
 import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.NetworkChecker
 import info.fekri.tmdb.util.styleLimitedText
+import org.koin.core.parameter.parametersOf
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -65,11 +74,18 @@ fun MainScreenPreview() {
 
 @Composable
 fun MainScreen() {
+
+    val context = LocalContext.current
+
     val navigation = getNavController()
     val uiController = rememberSystemUiController()
     SideEffect {
         uiController.setStatusBarColor(Blue)
     }
+
+    val viewModel = getNavViewModel<MainScreenViewModel>(
+        parameters = { parametersOf(NetworkChecker(context).isInternetConnected) }
+    )
 
     Column(
         modifier = Modifier
@@ -82,20 +98,48 @@ fun MainScreen() {
             navigation.navigate(MyScreens.SearchScreen.route)
         }
 
-        CategoryBar(categoryList = MOVIE_CATEGORY_LIST) {
+        if (viewModel.showProgress.value) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = WhiteCover)
+        }
+
+        CategoryBar(categoryList = CATEGORY_LIST) {
             // go to category screen
             navigation.navigate(MyScreens.CategoryScreen.route + "/$it")
         }
 
-        ProductSubject()
+        if (viewModel.showProgress.value) {
+            // show error animation
+            Surface(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .align(Alignment.CenterHorizontally),
+                color = Color.Transparent
+            ) {
+                ShowErrorAnimation()
+            }
+        }
 
-        BigPictureAds()
+    }
 
-        ProductSubject()
+}
 
-        BigPictureAds()
+@Composable
+fun ShowErrorAnimation() {
 
-        ProductSubject()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.no_data_anim))
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            alignment = Alignment.TopCenter
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(text = "Trying to load data...", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Medium, color = WhiteCover))
 
     }
 
