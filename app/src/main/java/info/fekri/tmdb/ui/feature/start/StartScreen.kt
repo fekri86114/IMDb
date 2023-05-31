@@ -84,7 +84,7 @@ fun StartScreen() {
             Spacer(modifier = Modifier.height(80.dp))
 
             Column {
-                StartContent("Let's start normally :-)") {
+                StartContent("Let's start normally") {
                     if (NetworkChecker(context).isInternetConnected) {
                         if (viewModel.isUserFromIran.value) {
                             Toast.makeText(
@@ -131,7 +131,7 @@ fun StartScreen() {
                     }
                 }
 
-                StartContent("You choose :-)") {
+                StartContent("Choose random") {
                     if (NetworkChecker(context).isInternetConnected) {
                         if (viewModel.isUserFromIran.value) {
                             Toast.makeText(

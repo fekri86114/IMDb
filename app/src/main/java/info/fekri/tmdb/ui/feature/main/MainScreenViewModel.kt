@@ -3,19 +3,21 @@ package info.fekri.tmdb.ui.feature.main
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import info.fekri.tmdb.model.data.PopularMovie
-import info.fekri.tmdb.model.data.Product
-import info.fekri.tmdb.model.repository.ProductRepository
+import info.fekri.tmdb.model.data.Action
+import info.fekri.tmdb.model.data.Adventure
+import info.fekri.tmdb.model.data.Fantasy
+import info.fekri.tmdb.model.repository.MovieRepository
 import info.fekri.tmdb.util.coroutineExceptionHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
-    private val productRepository: ProductRepository,
+    private val movieRepository: MovieRepository,
     isNetConnected: Boolean
 ) : ViewModel() {
-    val dataProducts = mutableStateOf<List<Product>>(listOf())
-    val dataAds = mutableStateOf<List<PopularMovie>>(listOf())
+    val dataActions = mutableStateOf<List<Action>>(listOf())
+    val dataAdventures = mutableStateOf<List<Adventure>>(listOf())
+    val dataFantasies = mutableStateOf<List<Fantasy>>(listOf())
     val showProgress = mutableStateOf(false)
 
     init {
@@ -28,20 +30,32 @@ class MainScreenViewModel(
             if (isNetConnected) {
                 showProgress.value = true
 
-                val newDataProducts = async { productRepository.getAllProducts(isNetConnected) }
-                val newDataPopular = async { productRepository.getAllPopular(isNetConnected) }
-
-                updateData(newDataProducts.await(), newDataPopular.await())
+                dataActions.value = movieRepository.getAllActions(isNetConnected)
 
                 showProgress.value = false
             }
         }
 
-    }
+        viewModelScope.launch(coroutineExceptionHandler) {
+            if (isNetConnected) {
+                showProgress.value = true
 
-    private fun updateData(products: List<Product>, populars: List<PopularMovie>) {
-        dataProducts.value = products
-        dataAds.value = populars
+                dataFantasies.value = movieRepository.getAllFantasies(isNetConnected)
+
+                showProgress.value = false
+            }
+        }
+
+        viewModelScope.launch(coroutineExceptionHandler) {
+            if (isNetConnected) {
+                showProgress.value = true
+
+                dataAdventures.value = movieRepository.getAllAdventure(isNetConnected)
+
+                showProgress.value = false
+            }
+        }
+
     }
 
 }

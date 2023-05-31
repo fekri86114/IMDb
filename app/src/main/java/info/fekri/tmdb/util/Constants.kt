@@ -34,5 +34,5 @@ val CATEGORY_LIST: List<Pair<String, Int>> = listOf(
     Pair("Horror", R.drawable.img_horror),
     Pair("Mystery", R.drawable.img_mystery),
     Pair("Adventure", R.drawable.img_adventure),
-    Pair("Science Fiction.", R.drawable.img_science_fiction)
+    Pair("Scientific", R.drawable.img_science_fiction)
 )

@@ -10,7 +10,7 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    // https://api.themoviedb.org/3/search/movie?api_key=<API_KEY>&query=Jack+Reacher --> by query
+    // https://api.themoviedb.org/3/search/movie?api_key=<API_KEY>&query=Jack+Reacher --> query
     @GET("search/movie")
     suspend fun getMovieByQuery(
         @Query("api_key") apiKey: String = API_KEY,
@@ -18,16 +18,22 @@ interface ApiService {
     ): MovieByQueryResponse
 
     @GET("search/movie")
-    suspend fun getAllProducts(
+    suspend fun getAllActions(
         @Query("api_key") apiKey: String = API_KEY,
         @Query("query") query: String = "Action"
-    ): ProductResponse
+    ): ActionResponse
 
-    // https://api.themoviedb.org/3/movie/popular?api_key=<API_KEY>
-    @GET("movie/popular")
-    suspend fun getPopularMovie(
-        @Query("api_key") apiKey: String = API_KEY
-    ): PopularMovieResponse
+    @GET("search/movie")
+    suspend fun getAllFantasy(
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("query") query: String = "Fantasy"
+    ): FantasyResponse
+
+    @GET("search/movie")
+    suspend fun getAllAdventure(
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("query") query: String = "Adventure"
+    ): AdventureResponse
 
 }
 

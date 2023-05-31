@@ -31,7 +31,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -49,6 +49,9 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.tmdb.R
+import info.fekri.tmdb.model.data.Action
+import info.fekri.tmdb.model.data.Adventure
+import info.fekri.tmdb.model.data.Fantasy
 import info.fekri.tmdb.ui.theme.BackgroundMain
 import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
@@ -59,6 +62,7 @@ import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.CATEGORY_LIST
 import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.NetworkChecker
+import info.fekri.tmdb.util.POSTER_BASE_URL
 import info.fekri.tmdb.util.styleLimitedText
 import org.koin.core.parameter.parametersOf
 
@@ -97,7 +101,6 @@ fun MainScreen() {
         MainTopToolbar {
             navigation.navigate(MyScreens.SearchScreen.route)
         }
-
         if (viewModel.showProgress.value) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = WhiteCover)
         }
@@ -106,7 +109,6 @@ fun MainScreen() {
             // go to category screen
             navigation.navigate(MyScreens.CategoryScreen.route + "/$it")
         }
-
         if (viewModel.showProgress.value) {
             // show error animation
             Surface(
@@ -117,11 +119,30 @@ fun MainScreen() {
             ) {
                 ShowErrorAnimation()
             }
+        } else {
+
+            val dataActionState = viewModel.dataActions
+            ActionSubject(dataActionState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
+
+            val dataFantasyState = viewModel.dataFantasies
+            FantasySubject(data = dataFantasyState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
+
+            val dataAdventureState = viewModel.dataAdventures
+            AdventureSubject(data = dataAdventureState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
+
         }
 
     }
 
 }
+
+// ---------------------------------------------------
 
 @Composable
 fun ShowErrorAnimation() {
@@ -139,75 +160,59 @@ fun ShowErrorAnimation() {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text(text = "Trying to load data...", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Medium, color = WhiteCover))
+        Text(
+            text = "Trying to load data...",
+            style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Medium, color = WhiteCover)
+        )
 
     }
-
-}
-
-// ---------------------------------
-
-@Composable
-fun BigPictureAds() {
-
-    Image(
-        painter = painterResource(id = R.drawable.img_spider),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(260.dp)
-            .padding(top = 32.dp, start = 16.dp, end = 16.dp)
-            .clip(Shapes.medium)
-            .clickable { /*HANDLE LATER*/ }
-    )
 
 }
 
 // -------------------------------------------------
 
 @Composable
-fun ProductSubject() {
+fun ActionSubject(data: List<Action>, onActionItemClicked: (Int) -> Unit) {
 
     Column(modifier = Modifier.padding(top = 32.dp)) {
         Text(
-            text = "Popular",
+            text = "Action",
             modifier = Modifier.padding(start = 16.dp),
             style = MaterialTheme.typography.h6,
             color = WhiteCover
         )
 
-        ProductBar()
+        ActionBar(data, onActionItemClicked)
     }
 
 }
 
 @Composable
-fun ProductBar() {
+fun ActionBar(data: List<Action>, onActionItemClicked: (Int) -> Unit) {
     LazyRow(
         modifier = Modifier.padding(top = 16.dp),
         contentPadding = PaddingValues(end = 16.dp)
     ) {
-        items(10) {
-            ProductItem()
+        items(data.size) {
+            ActionItem(data[it], onActionItemClicked)
         }
     }
 }
 
 @Composable
-fun ProductItem() {
+fun ActionItem(action: Action, onActionItemClicked: (Int) -> Unit) {
 
     Card(
         modifier = Modifier
             .padding(start = 16.dp)
-            .clickable { },
+            .clickable { onActionItemClicked.invoke(action.id) },
         elevation = 4.dp,
         shape = Shapes.medium,
         backgroundColor = CoverBlue
     ) {
         Column {
-            Image(
-                painter = painterResource(id = R.drawable.img_spider),
+            AsyncImage(
+                model = POSTER_BASE_URL + action.posterPath,
                 contentDescription = null,
                 modifier = Modifier.size(200.dp),
                 contentScale = ContentScale.Crop
@@ -217,7 +222,7 @@ fun ProductItem() {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = styleLimitedText("Spider Man", 12),
+                    text = styleLimitedText(action.title, 12),
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
@@ -225,7 +230,7 @@ fun ProductItem() {
                     )
                 )
                 Text(
-                    text = "2016-05-25",
+                    text = action.releaseDate,
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
@@ -235,14 +240,196 @@ fun ProductItem() {
                 )
                 Row {
                     Text(
-                        text = "Rating: ",
+                        text = "vote average: ",
                         style = TextStyle(
                             fontSize = 14.sp,
                             color = Color.White
                         )
                     )
                     Text(
-                        text = "8.4",
+                        text = action.voteAverage.toString(),
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = WhiteCover
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+}
+
+// ------------------------------------------------------
+
+@Composable
+fun FantasySubject(data: List<Fantasy>, onActionItemClicked: (Int) -> Unit) {
+
+    Column(modifier = Modifier.padding(top = 32.dp)) {
+        Text(
+            text = "Action",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        FantasyBar(data, onActionItemClicked)
+    }
+
+}
+
+@Composable
+fun FantasyBar(data: List<Fantasy>, onActionItemClicked: (Int) -> Unit) {
+    LazyRow(
+        modifier = Modifier.padding(top = 16.dp),
+        contentPadding = PaddingValues(end = 16.dp)
+    ) {
+        items(data.size) {
+            FantasyItem(data[it], onActionItemClicked)
+        }
+    }
+}
+
+@Composable
+fun FantasyItem(fantasy: Fantasy, onActionItemClicked: (Int) -> Unit) {
+
+    Card(
+        modifier = Modifier
+            .padding(start = 16.dp)
+            .clickable { onActionItemClicked.invoke(fantasy.id) },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+        backgroundColor = CoverBlue
+    ) {
+        Column {
+            AsyncImage(
+                model = POSTER_BASE_URL + fantasy.posterPath,
+                contentDescription = null,
+                modifier = Modifier.size(200.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = styleLimitedText(fantasy.title, 12),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = fantasy.releaseDate,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = WhiteCover
+                    ),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Row {
+                    Text(
+                        text = "vote average: ",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = fantasy.voteAverage.toString(),
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = WhiteCover
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+}
+
+// ---------------------------------------------------------
+
+@Composable
+fun AdventureSubject(data: List<Adventure>, onActionItemClicked: (Int) -> Unit) {
+
+    Column(modifier = Modifier.padding(top = 32.dp)) {
+        Text(
+            text = "Action",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        AdventureBar(data, onActionItemClicked)
+    }
+
+}
+
+@Composable
+fun AdventureBar(data: List<Adventure>, onActionItemClicked: (Int) -> Unit) {
+    LazyRow(
+        modifier = Modifier.padding(top = 16.dp),
+        contentPadding = PaddingValues(end = 16.dp)
+    ) {
+        items(data.size) {
+            AdventureItem(data[it], onActionItemClicked)
+        }
+    }
+}
+
+@Composable
+fun AdventureItem(advent: Adventure, onActionItemClicked: (Int) -> Unit) {
+
+    Card(
+        modifier = Modifier
+            .padding(start = 16.dp)
+            .clickable { onActionItemClicked.invoke(advent.id) },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+        backgroundColor = CoverBlue
+    ) {
+        Column {
+            AsyncImage(
+                model = POSTER_BASE_URL + advent.posterPath,
+                contentDescription = null,
+                modifier = Modifier.size(200.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = styleLimitedText(advent.title, 12),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = advent.releaseDate,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = WhiteCover
+                    ),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Row {
+                    Text(
+                        text = "vote average: ",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = advent.voteAverage.toString(),
                         style = TextStyle(
                             fontSize = 13.sp,
                             color = WhiteCover
