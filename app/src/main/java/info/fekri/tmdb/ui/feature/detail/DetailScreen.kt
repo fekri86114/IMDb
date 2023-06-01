@@ -1,19 +1,14 @@
 package info.fekri.tmdb.ui.feature.detail
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -23,21 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import dev.burnoo.cokoin.navigation.getNavController
-import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.tmdb.ui.theme.Blue
-import info.fekri.tmdb.ui.theme.CoverBlue
-import info.fekri.tmdb.ui.theme.Shapes
-import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.MyScreens
-import info.fekri.tmdb.util.POSTER_BASE_URL
 
 @Composable
 fun DetailScreen(movieId: Int) {
@@ -45,7 +32,10 @@ fun DetailScreen(movieId: Int) {
     val navigation = getNavController()
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 16.dp)
     ) {
 
         DetailTopToolbar(
@@ -58,6 +48,19 @@ fun DetailScreen(movieId: Int) {
                 }
             }
         )
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = "Movie ID: $movieId",
+                style= TextStyle(
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White,
+                    fontSize = 26.sp
+                )
+            )
+        }
 
     }
 

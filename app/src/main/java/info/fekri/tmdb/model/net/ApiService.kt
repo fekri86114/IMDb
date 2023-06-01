@@ -1,12 +1,19 @@
 package info.fekri.tmdb.model.net
 
 import info.fekri.tmdb.model.data.*
+import info.fekri.tmdb.model.data.movie.ActionResponse
+import info.fekri.tmdb.model.data.movie.AdventureResponse
+import info.fekri.tmdb.model.data.movie.ComedyResponse
+import info.fekri.tmdb.model.data.movie.DramaResponse
+import info.fekri.tmdb.model.data.movie.FantasyResponse
+import info.fekri.tmdb.model.data.movie.HorrorResponse
+import info.fekri.tmdb.model.data.movie.MysteryResponse
+import info.fekri.tmdb.model.data.movie.ScientificResponse
 import info.fekri.tmdb.util.API_KEY
 import info.fekri.tmdb.util.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -29,6 +36,42 @@ interface ApiService {
         @Query("api_key") apiKey: String = API_KEY,
         @Query("query") query: String = "Fantasy"
     ): FantasyResponse
+
+    @GET("search/movie")
+    suspend fun getAllComedy(
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("query") query: String = "Comedy"
+    ): ComedyResponse
+
+    @GET("search/movie")
+    suspend fun getAllDrama(
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("query") query: String = "Drama"
+    ): DramaResponse
+
+    @GET("search/movie")
+    suspend fun getAllHorror(
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("query") query: String = "Horror"
+    ): HorrorResponse
+
+    @GET("search/movie")
+    suspend fun getAllMystery(
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("query") query: String = "Mystery"
+    ): MysteryResponse
+
+    @GET("search/movie")
+    suspend fun getAllAdventure(
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("query") query: String = "Adventure"
+    ): AdventureResponse
+
+    @GET("search/movie")
+    suspend fun getAllScientific(
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("query") query: String = "Science Fiction"
+    ): ScientificResponse
 
     @GET("movie/popular")
     suspend fun getAllPopulars(

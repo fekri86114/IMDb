@@ -1,29 +1,32 @@
-package info.fekri.tmdb.model.data
+package info.fekri.tmdb.model.data.movie
+
 
 import com.google.gson.annotations.SerializedName
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-data class ActionResponse(
+data class HorrorResponse(
     @SerializedName("page")
     val page: Int,
     @SerializedName("results")
-    val results: List<Action>,
+    val horrors: List<Horror>,
     @SerializedName("total_pages")
     val totalPages: Int,
     @SerializedName("total_results")
     val totalResults: Int
 )
 
-data class Action(
-
-    @SerializedName("id")
-    val id: Int,
-
+data class Horror(
+    @SerializedName("adult")
+    val adult: Boolean,
     @SerializedName("backdrop_path")
     val backdropPath: String,
+    @SerializedName("genre_ids")
+    val genreIds: List<Int>,
+    @SerializedName("id")
+    val id: Int,
     @SerializedName("original_language")
     val originalLanguage: String,
+    @SerializedName("original_title")
+    val originalTitle: String,
     @SerializedName("overview")
     val overview: String,
     @SerializedName("popularity")

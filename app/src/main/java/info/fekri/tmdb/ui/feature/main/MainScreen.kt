@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.SnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,12 +12,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
-import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -30,6 +28,7 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -43,16 +42,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
-import info.fekri.tmdb.R
-import info.fekri.tmdb.model.data.Action
-import info.fekri.tmdb.model.data.Fantasy
-import info.fekri.tmdb.model.data.PopularResponse
+import info.fekri.tmdb.model.data.Popular
+import info.fekri.tmdb.model.data.movie.Action
+import info.fekri.tmdb.model.data.movie.Adventure
+import info.fekri.tmdb.model.data.movie.Comedy
+import info.fekri.tmdb.model.data.movie.Drama
+import info.fekri.tmdb.model.data.movie.Fantasy
+import info.fekri.tmdb.model.data.movie.Horror
+import info.fekri.tmdb.model.data.movie.Mystery
+import info.fekri.tmdb.model.data.movie.Scientific
 import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
 import info.fekri.tmdb.ui.theme.ItemBackground
@@ -81,10 +86,6 @@ fun MainScreen() {
         getNavViewModel<MainScreenViewModel>(parameters = { parametersOf(NetworkChecker(context).isInternetConnected) })
 
     val pagerState = rememberPagerState()
-    val fling = PagerDefaults.flingBehavior(
-        state = pagerState,
-        pagerSnapDistance = PagerSnapDistance.atMost(viewModel.dataPopulars.value.size)
-    )
 
     Column(
         modifier = Modifier
@@ -102,20 +103,74 @@ fun MainScreen() {
 
         CategoryBar(categoryList = CATEGORY_LIST) {
             // go to category screen
-            navigation.navigate(MyScreens.CategoryScreen.route + "/$it")
+            navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
         }
 
+        // ---
         val dataActionState = viewModel.dataActions
         ActionSubject(dataActionState.value) {
             navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
         }
 
-        val dataPopularState = viewModel.dataPopulars
-        PopularMovieSlides(dataPopularState.value, pagerState, fling)
-
         val dataFantasyState = viewModel.dataFantasies
         FantasySubject(data = dataFantasyState.value) {
             navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        // popular slides
+        val dataPopularState = viewModel.dataPopulars
+        PopularMovieSlides(dataPopularState.value, pagerState) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        // ---
+        val dataComedyState = viewModel.dataComedies
+        ComedySubject(data = dataComedyState.value) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        val dataDramaState = viewModel.dataDramas
+        DramaSubject(data = dataDramaState.value) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        val dataHorrorState = viewModel.dataHorrors
+        HorrorMovieSlides(
+            horrors = dataHorrorState.value,
+            pagerState = pagerState
+        ) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        // ---
+        if (viewModel.showLoadMoreButton.value) {
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 24.dp),
+                onClick = { viewModel.loadMoreData(NetworkChecker(context).isInternetConnected) }
+            ) {
+                Text(text = "Load More...", textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        if (!viewModel.showLoadMoreButton.value) {
+            val dataMysteryState = viewModel.dataMysteries
+            MysterySubject(dataMysteryState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
+
+            val dataAdventureState = viewModel.dataAdventures
+            AdventureSubject(dataAdventureState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
+
+            val dataScientificState = viewModel.dataScientific
+            ScientificSlides(dataScientificState.value, pagerState) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
         }
 
     }
@@ -125,86 +180,104 @@ fun MainScreen() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PopularMovieSlides(populars: List<PopularResponse.Popular>, pagerState: PagerState, fling: SnapFlingBehavior) {
+fun PopularMovieSlides(
+    populars: List<Popular>,
+    pagerState: PagerState,
+    onPopularItemClicked: (Int) -> Unit
+) {
 
-    HorizontalPager(
-        pageCount = populars.size,
-        state = pagerState,
-        modifier = Modifier.padding(top = 24.dp),
-        flingBehavior = fling
+    Column(
+        modifier = Modifier.padding(top = 24.dp)
     ) {
-        PopularItem(populars[it])
+
+        Text(
+            text = "Popular",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        HorizontalPager(
+            pageCount = populars.size,
+            state = pagerState,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            PopularItem(populars[it], onPopularItemClicked)
+        }
     }
 
 }
 
 @Composable
-fun PopularItem(pop: PopularResponse.Popular) {
+fun PopularItem(pop: Popular, onPopularItemClicked: (Int) -> Unit) {
     Card(
         modifier = Modifier
             .padding(2.dp)
-            .size(200.dp, 300.dp)
-            .clickable { },
+            .size(360.dp, 300.dp)
+            .clickable { onPopularItemClicked.invoke(pop.id) },
         elevation = 4.dp,
         shape = Shapes.medium,
     ) {
         Column(
             verticalArrangement = Arrangement.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.img_spider),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-            Box(
-                modifier = Modifier
-                    .size(200.dp, 80.dp)
-                    .background(CoverBlue),
-            ) {
-                Column(
-                    modifier = Modifier.padding(2.dp),
-                    verticalArrangement = Arrangement.Center
+            Box {
+                AsyncImage(
+                    model = POSTER_BASE_URL + pop.posterPath,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .background(CoverBlue)
+                        .align(Alignment.BottomCenter),
                 ) {
-                    Text(
-                        text = styleLimitedText(pop.title, 18),
-                        style = TextStyle(
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    )
-                    Text(
-                        text = pop.releaseDate,
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = WhiteCover
-                        ),
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                    Row {
+                    Column(
+                        modifier = Modifier.padding(8.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
                         Text(
-                            text = "vote average: ",
+                            text = styleLimitedText(pop.title, 22),
                             style = TextStyle(
-                                fontSize = 14.sp,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
                         )
                         Text(
-                            text = pop.voteAverage.toString(),
+                            text = pop.releaseDate,
                             style = TextStyle(
-                                fontSize = 13.sp,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
                                 color = WhiteCover
-                            )
+                            ),
+                            modifier = Modifier.padding(top = 4.dp)
                         )
+                        Row {
+                            Text(
+                                text = "vote average: ",
+                                style = TextStyle(
+                                    fontSize = 14.sp,
+                                    color = Color.White
+                                )
+                            )
+                            Text(
+                                text = pop.voteAverage.toString(),
+                                style = TextStyle(
+                                    fontSize = 13.sp,
+                                    color = WhiteCover
+                                )
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
-
 
 // -------------------------------------------------
 
@@ -252,8 +325,7 @@ fun ActionItem(action: Action, onActionItemClicked: (Int) -> Unit) {
                 model = POSTER_BASE_URL + action.posterPath,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(200.dp)
-                    .padding(2.dp),
+                    .size(200.dp),
                 contentScale = ContentScale.Crop
             )
             Column(
@@ -425,6 +497,580 @@ fun CategoryItem(subject: Pair<String, Int>, onCategoryClicked: (String) -> Unit
                     .size(80.dp)
                     .padding(16.dp)
             )
+        }
+    }
+}
+
+// -------------------------------------------------
+
+@Composable
+fun ComedySubject(data: List<Comedy>, onComedyItemClicked: (Int) -> Unit) {
+
+    Column(modifier = Modifier.padding(top = 32.dp)) {
+        Text(
+            text = "Comedy",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        ComedyBar(data, onComedyItemClicked)
+    }
+
+}
+
+@Composable
+fun ComedyBar(data: List<Comedy>, onComedyItemClicked: (Int) -> Unit) {
+    LazyRow(
+        modifier = Modifier.padding(top = 16.dp),
+        contentPadding = PaddingValues(end = 16.dp)
+    ) {
+        items(data.size) {
+            ComedyItem(data[it], onComedyItemClicked)
+        }
+    }
+}
+
+@Composable
+fun ComedyItem(comedy: Comedy, onComedyItemClicked: (Int) -> Unit) {
+
+    Card(
+        modifier = Modifier
+            .padding(start = 16.dp)
+            .clickable { onComedyItemClicked.invoke(comedy.id) },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+        backgroundColor = CoverBlue
+    ) {
+        Column {
+            AsyncImage(
+                model = POSTER_BASE_URL + comedy.posterPath,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(200.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = styleLimitedText(comedy.title, 12),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = comedy.releaseDate,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = WhiteCover
+                    ),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Row {
+                    Text(
+                        text = "vote average: ",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = comedy.voteAverage.toString(),
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = WhiteCover
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+}
+
+// -------------------------------------------------
+
+@Composable
+fun DramaSubject(data: List<Drama>, onDramaItemClicked: (Int) -> Unit) {
+
+    Column(modifier = Modifier.padding(top = 32.dp)) {
+        Text(
+            text = "Drama",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        DramaBar(data, onDramaItemClicked)
+    }
+
+}
+
+@Composable
+fun DramaBar(data: List<Drama>, onDramaItemClicked: (Int) -> Unit) {
+    LazyRow(
+        modifier = Modifier.padding(top = 16.dp),
+        contentPadding = PaddingValues(end = 16.dp)
+    ) {
+        items(data.size) {
+            DramaItem(data[it], onDramaItemClicked)
+        }
+    }
+}
+
+@Composable
+fun DramaItem(drama: Drama, onDramaItemClicked: (Int) -> Unit) {
+
+    Card(
+        modifier = Modifier
+            .padding(start = 16.dp)
+            .clickable { onDramaItemClicked.invoke(drama.id) },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+        backgroundColor = CoverBlue
+    ) {
+        Column {
+            AsyncImage(
+                model = POSTER_BASE_URL + drama.posterPath,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(200.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = styleLimitedText(drama.title, 12),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = drama.releaseDate,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = WhiteCover
+                    ),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Row {
+                    Text(
+                        text = "vote average: ",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = drama.voteAverage.toString(),
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = WhiteCover
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+}
+
+// -------------------------------------------------
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HorrorMovieSlides(
+    horrors: List<Horror>,
+    pagerState: PagerState,
+    onHorrorItemClicked: (Int) -> Unit
+) {
+
+    Column(
+        modifier = Modifier.padding(top = 24.dp)
+    ) {
+
+        Text(
+            text = "Horror",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        HorizontalPager(
+            pageCount = horrors.size,
+            state = pagerState,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            HorrorItem(horrors[it], onHorrorItemClicked)
+        }
+    }
+
+}
+
+@Composable
+fun HorrorItem(horror: Horror, onHorrorItemClicked: (Int) -> Unit) {
+    Card(
+        modifier = Modifier
+            .padding(2.dp)
+            .size(360.dp, 300.dp)
+            .clickable { onHorrorItemClicked.invoke(horror.id) },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box {
+                AsyncImage(
+                    model = POSTER_BASE_URL + horror.posterPath,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .background(CoverBlue)
+                        .align(Alignment.BottomCenter),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(8.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = styleLimitedText(horror.title, 22),
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        )
+                        Text(
+                            text = horror.releaseDate,
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = WhiteCover
+                            ),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        Row {
+                            Text(
+                                text = "vote average: ",
+                                style = TextStyle(
+                                    fontSize = 14.sp,
+                                    color = Color.White
+                                )
+                            )
+                            Text(
+                                text = horror.voteAverage.toString(),
+                                style = TextStyle(
+                                    fontSize = 13.sp,
+                                    color = WhiteCover
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// -------------------------------------------------
+
+@Composable
+fun MysterySubject(data: List<Mystery>, onMysteryItemClicked: (Int) -> Unit) {
+
+    Column(modifier = Modifier.padding(top = 32.dp)) {
+        Text(
+            text = "Mystery",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        MysteryBar(data, onMysteryItemClicked)
+    }
+
+}
+
+@Composable
+fun MysteryBar(data: List<Mystery>, onMysteryItemClicked: (Int) -> Unit) {
+    LazyRow(
+        modifier = Modifier.padding(top = 16.dp),
+        contentPadding = PaddingValues(end = 16.dp)
+    ) {
+        items(data.size) {
+            MysteryItem(data[it], onMysteryItemClicked)
+        }
+    }
+}
+
+@Composable
+fun MysteryItem(mystery: Mystery, onMysteryItemClicked: (Int) -> Unit) {
+
+    Card(
+        modifier = Modifier
+            .padding(start = 16.dp)
+            .clickable { onMysteryItemClicked.invoke(mystery.id) },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+        backgroundColor = CoverBlue
+    ) {
+        Column {
+            AsyncImage(
+                model = POSTER_BASE_URL + mystery.posterPath,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(200.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = styleLimitedText(mystery.title, 12),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = mystery.releaseDate,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = WhiteCover
+                    ),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Row {
+                    Text(
+                        text = "vote average: ",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = mystery.voteAverage.toString(),
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = WhiteCover
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+}
+
+// -------------------------------------------------
+
+@Composable
+fun AdventureSubject(data: List<Adventure>, onAdventureItemClicked: (Int) -> Unit) {
+
+    Column(modifier = Modifier.padding(top = 32.dp)) {
+        Text(
+            text = "Adventure",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        AdventureBar(data, onAdventureItemClicked)
+    }
+
+}
+
+@Composable
+fun AdventureBar(data: List<Adventure>, onAdventureItemClicked: (Int) -> Unit) {
+    LazyRow(
+        modifier = Modifier.padding(top = 16.dp),
+        contentPadding = PaddingValues(end = 16.dp)
+    ) {
+        items(data.size) {
+            AdventureItem(data[it], onAdventureItemClicked)
+        }
+    }
+}
+
+@Composable
+fun AdventureItem(adventure: Adventure, onAdventureItemClicked: (Int) -> Unit) {
+
+    Card(
+        modifier = Modifier
+            .padding(start = 16.dp)
+            .clickable { onAdventureItemClicked.invoke(adventure.id) },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+        backgroundColor = CoverBlue
+    ) {
+        Column {
+            AsyncImage(
+                model = POSTER_BASE_URL + adventure.posterPath,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(200.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = styleLimitedText(adventure.title, 12),
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = adventure.releaseDate,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = WhiteCover
+                    ),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Row {
+                    Text(
+                        text = "vote average: ",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = adventure.voteAverage.toString(),
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = WhiteCover
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+}
+
+// -------------------------------------------------
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ScientificSlides(
+    scientific: List<Scientific>,
+    pagerState: PagerState,
+    onScientificItemClicked: (Int) -> Unit
+) {
+
+    Column(
+        modifier = Modifier.padding(top = 24.dp)
+    ) {
+
+        Text(
+            text = "Science Fiction",
+            modifier = Modifier.padding(start = 16.dp),
+            style = MaterialTheme.typography.h6,
+            color = WhiteCover
+        )
+
+        HorizontalPager(
+            pageCount = scientific.size,
+            state = pagerState,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            ScientificItem(scientific[it], onScientificItemClicked)
+        }
+    }
+
+}
+
+@Composable
+fun ScientificItem(scientific: Scientific, onScientificItemClicked: (Int) -> Unit) {
+    Card(
+        modifier = Modifier
+            .padding(2.dp)
+            .size(360.dp, 300.dp)
+            .clickable { onScientificItemClicked.invoke(scientific.id) },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box {
+                AsyncImage(
+                    model = POSTER_BASE_URL + scientific.posterPath,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .background(CoverBlue)
+                        .align(Alignment.BottomCenter),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(8.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = styleLimitedText(scientific.title, 22),
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        )
+                        Text(
+                            text = scientific.releaseDate,
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = WhiteCover
+                            ),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        Row {
+                            Text(
+                                text = "vote average: ",
+                                style = TextStyle(
+                                    fontSize = 14.sp,
+                                    color = Color.White
+                                )
+                            )
+                            Text(
+                                text = scientific.voteAverage.toString(),
+                                style = TextStyle(
+                                    fontSize = 13.sp,
+                                    color = WhiteCover
+                                )
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

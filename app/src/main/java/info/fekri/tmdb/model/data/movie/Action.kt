@@ -1,31 +1,27 @@
-package info.fekri.tmdb.model.data
+package info.fekri.tmdb.model.data.movie
 
 import com.google.gson.annotations.SerializedName
 
-data class PopularResponse(
+data class ActionResponse(
     @SerializedName("page")
     val page: Int,
     @SerializedName("results")
-    val populars: List<Popular>,
+    val results: List<Action>,
     @SerializedName("total_pages")
     val totalPages: Int,
     @SerializedName("total_results")
     val totalResults: Int
 )
 
-data class Popular(
-    @SerializedName("adult")
-    val adult: Boolean,
-    @SerializedName("backdrop_path")
-    val backdropPath: String,
-    @SerializedName("genre_ids")
-    val genreIds: List<Int>,
+data class Action(
+
     @SerializedName("id")
     val id: Int,
+
+    @SerializedName("backdrop_path")
+    val backdropPath: String,
     @SerializedName("original_language")
     val originalLanguage: String,
-    @SerializedName("original_title")
-    val originalTitle: String,
     @SerializedName("overview")
     val overview: String,
     @SerializedName("popularity")

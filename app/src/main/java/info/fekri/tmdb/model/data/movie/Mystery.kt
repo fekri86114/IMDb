@@ -1,19 +1,20 @@
-package info.fekri.tmdb.model.data
+package info.fekri.tmdb.model.data.movie
+
 
 import com.google.gson.annotations.SerializedName
 
-data class PopularResponse(
+data class MysteryResponse(
     @SerializedName("page")
     val page: Int,
     @SerializedName("results")
-    val populars: List<Popular>,
+    val mysteries: List<Mystery>,
     @SerializedName("total_pages")
     val totalPages: Int,
     @SerializedName("total_results")
     val totalResults: Int
 )
 
-data class Popular(
+data class Mystery(
     @SerializedName("adult")
     val adult: Boolean,
     @SerializedName("backdrop_path")

@@ -9,4 +9,3 @@ val CoverBlue = Color(0xF2455079)
 val WhiteCover = Color(0x99FFFFFF)
 
 val ItemBackground = Color(9, 121, 223, 10)
-
