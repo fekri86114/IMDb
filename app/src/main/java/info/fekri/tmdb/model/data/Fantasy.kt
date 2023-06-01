@@ -9,24 +9,20 @@ data class FantasyResponse(
     @SerializedName("page")
     val page: Int,
     @SerializedName("results")
-    val fantasies: List<Fantasy>,
+    val results: List<Fantasy>,
     @SerializedName("total_pages")
     val totalPages: Int,
     @SerializedName("total_results")
     val totalResults: Int
 )
 
-@Entity("fantasy_movie_table")
 data class Fantasy(
-    @SerializedName("adult")
-    val adult: Boolean,
-    @SerializedName("backdrop_path")
-    val backdropPath: String,
 
-    @PrimaryKey
     @SerializedName("id")
     val id: Int,
 
+    @SerializedName("backdrop_path")
+    val backdropPath: String,
     @SerializedName("original_language")
     val originalLanguage: String,
     @SerializedName("overview")

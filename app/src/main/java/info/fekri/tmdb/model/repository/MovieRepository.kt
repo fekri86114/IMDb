@@ -8,6 +8,4 @@ interface MovieRepository {
 
     suspend fun getAllFantasies(isNetConnected: Boolean): List<Fantasy>
 
-    suspend fun getAllAdventure(isNetConnected: Boolean): List<Adventure>
-
 }

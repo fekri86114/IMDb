@@ -6,6 +6,7 @@ import info.fekri.tmdb.util.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -28,12 +29,6 @@ interface ApiService {
         @Query("api_key") apiKey: String = API_KEY,
         @Query("query") query: String = "Fantasy"
     ): FantasyResponse
-
-    @GET("search/movie")
-    suspend fun getAllAdventure(
-        @Query("api_key") apiKey: String = API_KEY,
-        @Query("query") query: String = "Adventure"
-    ): AdventureResponse
 
 }
 

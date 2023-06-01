@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -28,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,26 +34,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
-import info.fekri.tmdb.R
 import info.fekri.tmdb.model.data.Action
-import info.fekri.tmdb.model.data.Adventure
 import info.fekri.tmdb.model.data.Fantasy
-import info.fekri.tmdb.ui.theme.BackgroundMain
 import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
 import info.fekri.tmdb.ui.theme.ItemBackground
-import info.fekri.tmdb.ui.theme.MainAppTheme
 import info.fekri.tmdb.ui.theme.Shapes
 import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.CATEGORY_LIST
@@ -65,16 +53,6 @@ import info.fekri.tmdb.util.NetworkChecker
 import info.fekri.tmdb.util.POSTER_BASE_URL
 import info.fekri.tmdb.util.styleLimitedText
 import org.koin.core.parameter.parametersOf
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun MainScreenPreview() {
-    MainAppTheme {
-        Surface(color = BackgroundMain, modifier = Modifier.fillMaxSize()) {
-            MainScreen()
-        }
-    }
-}
 
 @Composable
 fun MainScreen() {
@@ -87,9 +65,7 @@ fun MainScreen() {
         uiController.setStatusBarColor(Blue)
     }
 
-    val viewModel = getNavViewModel<MainScreenViewModel>(
-        parameters = { parametersOf(NetworkChecker(context).isInternetConnected) }
-    )
+    val viewModel = getNavViewModel<MainScreenViewModel>(parameters = { parametersOf(NetworkChecker(context).isInternetConnected) })
 
     Column(
         modifier = Modifier
@@ -109,63 +85,28 @@ fun MainScreen() {
             // go to category screen
             navigation.navigate(MyScreens.CategoryScreen.route + "/$it")
         }
-        if (viewModel.showProgress.value) {
-            // show error animation
-            Surface(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .align(Alignment.CenterHorizontally),
-                color = Color.Transparent
-            ) {
-                ShowErrorAnimation()
-            }
-        } else {
 
-            val dataActionState = viewModel.dataActions
-            ActionSubject(dataActionState.value) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-            }
+        val dataActionState = viewModel.dataActions
+        ActionSubject(dataActionState.value) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
 
-            val dataFantasyState = viewModel.dataFantasies
-            FantasySubject(data = dataFantasyState.value) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-            }
+        PopularMovieSlides()
 
-            val dataAdventureState = viewModel.dataAdventures
-            AdventureSubject(data = dataAdventureState.value) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-            }
-
+        val dataFantasyState = viewModel.dataFantasies
+        FantasySubject(data = dataFantasyState.value) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
         }
 
     }
-
 }
 
 // ---------------------------------------------------
 
 @Composable
-fun ShowErrorAnimation() {
+fun PopularMovieSlides() {
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.no_data_anim))
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
-            alignment = Alignment.TopCenter
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "Trying to load data...",
-            style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Medium, color = WhiteCover)
-        )
-
-    }
+    
 
 }
 
@@ -267,7 +208,7 @@ fun FantasySubject(data: List<Fantasy>, onActionItemClicked: (Int) -> Unit) {
 
     Column(modifier = Modifier.padding(top = 32.dp)) {
         Text(
-            text = "Action",
+            text = "Fantasy",
             modifier = Modifier.padding(start = 16.dp),
             style = MaterialTheme.typography.h6,
             color = WhiteCover
@@ -339,97 +280,6 @@ fun FantasyItem(fantasy: Fantasy, onActionItemClicked: (Int) -> Unit) {
                     )
                     Text(
                         text = fantasy.voteAverage.toString(),
-                        style = TextStyle(
-                            fontSize = 13.sp,
-                            color = WhiteCover
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-}
-
-// ---------------------------------------------------------
-
-@Composable
-fun AdventureSubject(data: List<Adventure>, onActionItemClicked: (Int) -> Unit) {
-
-    Column(modifier = Modifier.padding(top = 32.dp)) {
-        Text(
-            text = "Action",
-            modifier = Modifier.padding(start = 16.dp),
-            style = MaterialTheme.typography.h6,
-            color = WhiteCover
-        )
-
-        AdventureBar(data, onActionItemClicked)
-    }
-
-}
-
-@Composable
-fun AdventureBar(data: List<Adventure>, onActionItemClicked: (Int) -> Unit) {
-    LazyRow(
-        modifier = Modifier.padding(top = 16.dp),
-        contentPadding = PaddingValues(end = 16.dp)
-    ) {
-        items(data.size) {
-            AdventureItem(data[it], onActionItemClicked)
-        }
-    }
-}
-
-@Composable
-fun AdventureItem(advent: Adventure, onActionItemClicked: (Int) -> Unit) {
-
-    Card(
-        modifier = Modifier
-            .padding(start = 16.dp)
-            .clickable { onActionItemClicked.invoke(advent.id) },
-        elevation = 4.dp,
-        shape = Shapes.medium,
-        backgroundColor = CoverBlue
-    ) {
-        Column {
-            AsyncImage(
-                model = POSTER_BASE_URL + advent.posterPath,
-                contentDescription = null,
-                modifier = Modifier.size(200.dp),
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier.padding(10.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = styleLimitedText(advent.title, 12),
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                )
-                Text(
-                    text = advent.releaseDate,
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = WhiteCover
-                    ),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-                Row {
-                    Text(
-                        text = "vote average: ",
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            color = Color.White
-                        )
-                    )
-                    Text(
-                        text = advent.voteAverage.toString(),
                         style = TextStyle(
                             fontSize = 13.sp,
                             color = WhiteCover
