@@ -5,6 +5,8 @@ You can watch and know movies with this application :-)
 
 ### App Info
 
+*Architecture: MVVM😈💀*
+
 *Developed with:*
 
   * *Jetpack-Compose🔥😍*
