@@ -1,9 +1,13 @@
 package info.fekri.tmdb.ui.feature.main
 
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.SnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,6 +16,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerSnapDistance
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
@@ -40,8 +49,10 @@ import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
+import info.fekri.tmdb.R
 import info.fekri.tmdb.model.data.Action
 import info.fekri.tmdb.model.data.Fantasy
+import info.fekri.tmdb.model.data.PopularResponse
 import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
 import info.fekri.tmdb.ui.theme.ItemBackground
@@ -54,6 +65,7 @@ import info.fekri.tmdb.util.POSTER_BASE_URL
 import info.fekri.tmdb.util.styleLimitedText
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen() {
 
@@ -65,7 +77,14 @@ fun MainScreen() {
         uiController.setStatusBarColor(Blue)
     }
 
-    val viewModel = getNavViewModel<MainScreenViewModel>(parameters = { parametersOf(NetworkChecker(context).isInternetConnected) })
+    val viewModel =
+        getNavViewModel<MainScreenViewModel>(parameters = { parametersOf(NetworkChecker(context).isInternetConnected) })
+
+    val pagerState = rememberPagerState()
+    val fling = PagerDefaults.flingBehavior(
+        state = pagerState,
+        pagerSnapDistance = PagerSnapDistance.atMost(viewModel.dataPopulars.value.size)
+    )
 
     Column(
         modifier = Modifier
@@ -91,7 +110,8 @@ fun MainScreen() {
             navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
         }
 
-        PopularMovieSlides()
+        val dataPopularState = viewModel.dataPopulars
+        PopularMovieSlides(dataPopularState.value, pagerState, fling)
 
         val dataFantasyState = viewModel.dataFantasies
         FantasySubject(data = dataFantasyState.value) {
@@ -103,12 +123,88 @@ fun MainScreen() {
 
 // ---------------------------------------------------
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PopularMovieSlides() {
+fun PopularMovieSlides(populars: List<PopularResponse.Popular>, pagerState: PagerState, fling: SnapFlingBehavior) {
 
-    
+    HorizontalPager(
+        pageCount = populars.size,
+        state = pagerState,
+        modifier = Modifier.padding(top = 24.dp),
+        flingBehavior = fling
+    ) {
+        PopularItem(populars[it])
+    }
 
 }
+
+@Composable
+fun PopularItem(pop: PopularResponse.Popular) {
+    Card(
+        modifier = Modifier
+            .padding(2.dp)
+            .size(200.dp, 300.dp)
+            .clickable { },
+        elevation = 4.dp,
+        shape = Shapes.medium,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.img_spider),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                modifier = Modifier
+                    .size(200.dp, 80.dp)
+                    .background(CoverBlue),
+            ) {
+                Column(
+                    modifier = Modifier.padding(2.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = styleLimitedText(pop.title, 18),
+                        style = TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = pop.releaseDate,
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = WhiteCover
+                        ),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                    Row {
+                        Text(
+                            text = "vote average: ",
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                color = Color.White
+                            )
+                        )
+                        Text(
+                            text = pop.voteAverage.toString(),
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                color = WhiteCover
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 // -------------------------------------------------
 
@@ -155,7 +251,9 @@ fun ActionItem(action: Action, onActionItemClicked: (Int) -> Unit) {
             AsyncImage(
                 model = POSTER_BASE_URL + action.posterPath,
                 contentDescription = null,
-                modifier = Modifier.size(200.dp),
+                modifier = Modifier
+                    .size(200.dp)
+                    .padding(2.dp),
                 contentScale = ContentScale.Crop
             )
             Column(
@@ -206,7 +304,7 @@ fun ActionItem(action: Action, onActionItemClicked: (Int) -> Unit) {
 @Composable
 fun FantasySubject(data: List<Fantasy>, onActionItemClicked: (Int) -> Unit) {
 
-    Column(modifier = Modifier.padding(top = 32.dp)) {
+    Column(modifier = Modifier.padding(top = 24.dp)) {
         Text(
             text = "Fantasy",
             modifier = Modifier.padding(start = 16.dp),

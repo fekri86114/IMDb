@@ -2,6 +2,7 @@ package info.fekri.tmdb.model.repository
 
 import info.fekri.tmdb.model.data.Action
 import info.fekri.tmdb.model.data.Fantasy
+import info.fekri.tmdb.model.data.PopularResponse
 import info.fekri.tmdb.model.net.ApiService
 
 class MovieRepositoryImpl(
@@ -37,6 +38,11 @@ class MovieRepositoryImpl(
         }
 
         return listOf()
+    }
+
+    override suspend fun getAllPops(): List<PopularResponse.Popular> {
+        val pops = apiService.getAllPopulars()
+        return pops.populars
     }
 
 }

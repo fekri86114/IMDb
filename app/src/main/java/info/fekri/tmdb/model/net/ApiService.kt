@@ -30,6 +30,11 @@ interface ApiService {
         @Query("query") query: String = "Fantasy"
     ): FantasyResponse
 
+    @GET("movie/popular")
+    suspend fun getAllPopulars(
+        @Query("api_key") apiKey: String = API_KEY,
+    ): PopularResponse
+
 }
 
 fun createApiService(): ApiService {
