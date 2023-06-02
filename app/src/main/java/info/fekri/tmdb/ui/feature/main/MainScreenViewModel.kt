@@ -15,6 +15,7 @@ import info.fekri.tmdb.model.data.movie.Scientific
 import info.fekri.tmdb.model.repository.MovieRepository
 import info.fekri.tmdb.util.coroutineExceptionHandler
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
@@ -45,6 +46,7 @@ class MainScreenViewModel(
         viewModelScope.launch(coroutineExceptionHandler) {
             if (isNetConnected) {
                 showProgress.value = true
+                delay(1200)
 
                 val dataActionToSet = async { movieRepository.getAllActions(isNetConnected) }
                 val dataFantasiesToSet = async { movieRepository.getAllFantasies(isNetConnected) }
@@ -52,7 +54,6 @@ class MainScreenViewModel(
 
                 val dataComedyToSet = async { movieRepository.getAllComedies(isNetConnected) }
                 val dataDramaToSet = async { movieRepository.getAllDramas(isNetConnected) }
-
                 val dataHorrorToSet = async { movieRepository.getAllHorrors(isNetConnected) }
 
                 updateDataMovies(
@@ -91,6 +92,7 @@ class MainScreenViewModel(
         if (isNetConnected) {
             viewModelScope.launch(coroutineExceptionHandler) {
                 showProgress.value = true
+                delay(1200)
 
                 val dataMysteryToSet = async { movieRepository.getAllMysteries(isNetConnected) }
                 val dataAdventureToSet = async { movieRepository.getAllAdventures(isNetConnected) }
