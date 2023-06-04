@@ -48,7 +48,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -107,7 +106,7 @@ fun MainScreen() {
         MainTopToolbar {
             navigation.navigate(MyScreens.SearchScreen.route)
         }
-        if (viewModel.showProgress.value) {
+        if (viewModel.showProgress.value || viewModel.showMoreProgress.value) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = WhiteCover)
         }
 
@@ -129,109 +128,67 @@ fun MainScreen() {
         val dataAdventureState = viewModel.dataAdventures
         val dataScientificState = viewModel.dataScientific
 
-        if (
-            dataActionState.value.isEmpty() ||
-            dataFantasyState.value.isEmpty() ||
-            dataPopularState.value.isEmpty() ||
-            dataComedyState.value.isEmpty() ||
-            dataDramaState.value.isEmpty() ||
-            dataHorrorState.value.isEmpty() ||
-            dataMysteryState.value.isEmpty() ||
-            dataAdventureState.value.isEmpty() ||
-            dataScientificState.value.isEmpty()
+
+        ActionSubject(dataActionState.value) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        FantasySubject(data = dataFantasyState.value) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        // popular slides
+        PopularMovieSlides(dataPopularState.value, pagerState) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        // ---
+
+        ComedySubject(data = dataComedyState.value) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        DramaSubject(data = dataDramaState.value) {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
+
+        HorrorMovieSlides(
+            horrors = dataHorrorState.value,
+            pagerState = pagerState
         ) {
-            ShowNoDataAnimation()
-        } else {
+            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+        }
 
-            ActionSubject(dataActionState.value) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-            }
-
-            FantasySubject(data = dataFantasyState.value) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-            }
-
-            // popular slides
-            PopularMovieSlides(dataPopularState.value, pagerState) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-            }
-
-            // ---
-
-            ComedySubject(data = dataComedyState.value) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-            }
-
-            DramaSubject(data = dataDramaState.value) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-            }
-
-            HorrorMovieSlides(
-                horrors = dataHorrorState.value,
-                pagerState = pagerState
+        // ---
+        if (viewModel.showLoadMoreButton.value) {
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 24.dp),
+                onClick = { viewModel.loadMoreData(NetworkChecker(context).isInternetConnected) }
             ) {
+                Text(
+                    text = "Load More...", textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        if (!viewModel.showLoadMoreButton.value) {
+            MysterySubject(dataMysteryState.value) {
                 navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
             }
 
-            // ---
-            if (viewModel.showLoadMoreButton.value) {
-                TextButton(
-                    modifier = Modifier
-                        .fillMaxWidth(0.7f)
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 24.dp),
-                    onClick = { viewModel.loadMoreData(NetworkChecker(context).isInternetConnected) }
-                ) {
-                    Text(
-                        text = "Load More...", textAlign = TextAlign.Center
-                    )
-                }
+            AdventureSubject(dataAdventureState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
             }
 
-            if (!viewModel.showLoadMoreButton.value) {
-                MysterySubject(dataMysteryState.value) {
-                    navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-                }
-
-                AdventureSubject(dataAdventureState.value) {
-                    navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-                }
-
-                ScientificSlides(dataScientificState.value, pagerState) {
-                    navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-                }
+            ScientificSlides(dataScientificState.value, pagerState) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
             }
-
         }
 
     }
-}
-
-// -----------------------------------------------
-
-@Composable
-fun ShowNoDataAnimation() {
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.no_data_anim)
-    )
-
-    Column {
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
-            modifier = Modifier.size(240.dp),
-            alignment = Alignment.Center
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "Trying to Load Data...",
-            fontSize = 20.sp,
-            color = WhiteCover
-        )
-    }
-
 }
 
 // ---------------------------------------------------

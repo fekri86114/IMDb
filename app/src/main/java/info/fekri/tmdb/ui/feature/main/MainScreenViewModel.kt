@@ -35,6 +35,7 @@ class MainScreenViewModel(
     val dataScientific = mutableStateOf<List<Scientific>>(listOf())
 
     val showProgress = mutableStateOf(false)
+    val showMoreProgress = mutableStateOf(false)
     val showLoadMoreButton = mutableStateOf(true)
 
     init {
@@ -91,7 +92,7 @@ class MainScreenViewModel(
     fun loadMoreData(isNetConnected: Boolean) {
         if (isNetConnected) {
             viewModelScope.launch(coroutineExceptionHandler) {
-                showProgress.value = true
+                showMoreProgress.value = true
                 delay(1200)
 
                 val dataMysteryToSet = async { movieRepository.getAllMysteries(isNetConnected) }
@@ -105,7 +106,7 @@ class MainScreenViewModel(
                 )
 
                 showLoadMoreButton.value = false
-                showProgress.value = false
+                showMoreProgress.value = false
             }
         }
     }

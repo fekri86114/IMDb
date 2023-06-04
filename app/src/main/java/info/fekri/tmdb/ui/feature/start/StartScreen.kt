@@ -16,26 +16,23 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
-import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.tmdb.R
 import info.fekri.tmdb.ui.theme.Blue
-import info.fekri.tmdb.ui.theme.CoverBlue
 import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.NetworkChecker
@@ -50,13 +47,6 @@ fun StartScreenPreview() {
 
 @Composable
 fun StartScreen() {
-    val viewModel = getNavViewModel<StartScreenViewModel>()
-    val ipAddress = viewModel.userIpAddress.value
-
-    LaunchedEffect(ipAddress) {
-        viewModel.fetchUserIpAddress()
-        viewModel.checkUserLocation(ipAddress)
-    }
 
     val uiController = rememberSystemUiController()
     SideEffect {
@@ -81,22 +71,13 @@ fun StartScreen() {
 
             ShowHelloAnim()
 
-            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             Column {
                 StartContent("Let's start normally") {
                     if (NetworkChecker(context).isInternetConnected) {
-                        if (viewModel.isUserFromIran.value) {
-                            Toast.makeText(
-                                context,
-                                "Unfortunately, You should Use an API Changer!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            Toast.makeText(context, "Try Again Later!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            navigation.navigate(MyScreens.MainScreen.route) {
-                                popUpTo(MyScreens.StartScreen.route)
-                            }
+                        navigation.navigate(MyScreens.MainScreen.route) {
+                            popUpTo(MyScreens.StartScreen.route)
                         }
                     } else {
                         Toast.makeText(
@@ -106,21 +87,14 @@ fun StartScreen() {
                         ).show()
                     }
                 }
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 StartContent("Let's search a movie") {
 
                     if (NetworkChecker(context).isInternetConnected) {
-                        if (viewModel.isUserFromIran.value) {
-                            Toast.makeText(
-                                context,
-                                "Unfortunately, You should Use an API Changer!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            Toast.makeText(context, "Try Again Later!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            navigation.navigate(MyScreens.SearchScreen.route) {
-                                popUpTo(MyScreens.StartScreen.route)
-                            }
+                        navigation.navigate(MyScreens.SearchScreen.route) {
+                            popUpTo(MyScreens.StartScreen.route)
                         }
                     } else {
                         Toast.makeText(
@@ -131,26 +105,20 @@ fun StartScreen() {
                     }
                 }
 
+                Spacer(modifier = Modifier.height(4.dp))
+
                 StartContent("Choose random") {
                     if (NetworkChecker(context).isInternetConnected) {
-                        if (viewModel.isUserFromIran.value) {
-                            Toast.makeText(
-                                context,
-                                "Unfortunately, You should Use an API Changer!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            Toast.makeText(context, "Try Again Later!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            val random = (0..1).random()
-                            if (random == 0)
-                                navigation.navigate(MyScreens.MainScreen.route) {
-                                    popUpTo(MyScreens.StartScreen.route)
-                                }
-                            else
-                                navigation.navigate(MyScreens.SearchScreen.route) {
-                                    popUpTo(MyScreens.StartScreen.route)
-                                }
-                        }
+                        val random = (0..1).random()
+                        if (random == 0)
+                            navigation.navigate(MyScreens.MainScreen.route) {
+                                popUpTo(MyScreens.StartScreen.route)
+                            }
+                        else
+                            navigation.navigate(MyScreens.SearchScreen.route) {
+                                popUpTo(MyScreens.StartScreen.route)
+                            }
+
                     } else {
                         Toast.makeText(
                             context,
@@ -183,9 +151,11 @@ fun StartContent(
             modifier = Modifier.fillMaxWidth(0.7f)
         ) {
             Text(
+                modifier = Modifier.padding(4.dp),
                 text = message,
                 style = TextStyle(
-                    color = WhiteCover
+                    color = WhiteCover,
+                    fontSize = 16.sp
                 )
             )
         }
