@@ -1,11 +1,13 @@
 package info.fekri.tmdb.ui.feature.detail
 
+import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
+import android.os.Environment
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
+import info.fekri.tmdb.R
 import info.fekri.tmdb.model.data.MovieId
 import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
@@ -48,6 +52,7 @@ import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.POSTER_BASE_URL
 import info.fekri.tmdb.util.stylePrice
+import java.io.File
 
 @Composable
 fun DetailScreen(movieId: Int) {
@@ -98,7 +103,11 @@ fun MovieDetailShow(data: MovieId) {
     ) {
 
         BigPictureMovieId(data.posterPath) {
-            // download
+            downloadImageNew(
+                "IMAGE_IMDb Movies",
+                it,
+                context
+            )
         }
 
         NameSurface(data.title)
@@ -119,16 +128,38 @@ fun MovieDetailShow(data: MovieId) {
 
 }
 
+private fun downloadImageNew(filename: String, downloadUrlOfImage: String, context: Context) {
+
+    try {
+        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
+        val downloadUri = Uri.parse(downloadUrlOfImage)
+        val request = DownloadManager.Request(downloadUri)
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+            .setAllowedOverRoaming(false)
+            .setTitle(filename)
+            .setMimeType("image/jpeg") // Your file type. You can use this code to download other file types also.
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setDestinationInExternalPublicDir(
+                Environment.DIRECTORY_PICTURES,
+                File.separator + filename + ".jpg"
+            )
+        dm!!.enqueue(request)
+        Toast.makeText(context, "Image download started.", Toast.LENGTH_SHORT).show()
+    } catch (e: Exception) {
+        Toast.makeText(context, "Image download failed.", Toast.LENGTH_SHORT).show()
+    }
+}
+
 @Composable
 fun MoreDetailButton(onHomepageClicked: () -> Unit) {
 
-        Button(
-            onClick = onHomepageClicked,
-            modifier = Modifier.fillMaxWidth(0.8f),
-            shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp)
-        ) {
-            Text(text = "Homepage")
-        }
+    Button(
+        onClick = onHomepageClicked,
+        modifier = Modifier.fillMaxWidth(0.8f),
+        shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp)
+    ) {
+        Text(text = "Homepage")
+    }
 
 }
 
@@ -236,22 +267,41 @@ fun NameSurface(title: String) {
 
 @Composable
 fun BigPictureMovieId(posterPath: String, onImageClicked: (String) -> Unit) {
-    Card(
-        shape = Shapes.medium,
-        modifier = Modifier
-            .size(300.dp, 300.dp)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .clickable {
-                onImageClicked.invoke(POSTER_BASE_URL + posterPath)
+    Box {
+        Card(
+            shape = Shapes.medium,
+            modifier = Modifier
+                .size(300.dp, 300.dp)
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+
+        ) {
+            Box(
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                AsyncImage(
+                    model = POSTER_BASE_URL + posterPath,
+                    contentDescription = null,
+                    modifier = Modifier.size(300.dp, 300.dp),
+                    contentScale = ContentScale.Crop
+                )
+                Box(
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    IconButton(onClick = {
+                        onImageClicked.invoke(POSTER_BASE_URL + posterPath)
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_download),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = Color.White
+                        )
+                    }
+                }
             }
-    ) {
-        AsyncImage(
-            model = POSTER_BASE_URL + posterPath,
-            contentDescription = null,
-            modifier = Modifier.size(300.dp, 300.dp),
-            contentScale = ContentScale.Crop
-        )
+        }
     }
+
 
 }
 
