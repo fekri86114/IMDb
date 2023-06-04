@@ -11,10 +11,26 @@ import info.fekri.tmdb.model.data.movie.Drama
 import info.fekri.tmdb.model.data.movie.Horror
 import info.fekri.tmdb.model.data.movie.Mystery
 import info.fekri.tmdb.model.data.movie.Scientific
+import info.fekri.tmdb.model.db.dao.ActionDao
+import info.fekri.tmdb.model.db.dao.AdventureDao
+import info.fekri.tmdb.model.db.dao.ComedyDao
+import info.fekri.tmdb.model.db.dao.DramaDao
+import info.fekri.tmdb.model.db.dao.FantasyDao
+import info.fekri.tmdb.model.db.dao.HorrorDao
+import info.fekri.tmdb.model.db.dao.MysteryDao
+import info.fekri.tmdb.model.db.dao.ScientificDao
 import info.fekri.tmdb.model.net.ApiService
 
 class MovieRepositoryImpl(
     private val apiService: ApiService,
+    private val actionDao: ActionDao,
+    private val adventureDao: AdventureDao,
+    private val comedyDao: ComedyDao,
+    private val dramaDao: DramaDao,
+    private val fantasyDao: FantasyDao,
+    private val horrorDao: HorrorDao,
+    private val mysteryDao: MysteryDao,
+    private val scientificDao: ScientificDao
 ) : MovieRepository {
 
     override suspend fun getAllActions(isNetConnected: Boolean): List<Action> {
@@ -22,9 +38,13 @@ class MovieRepositoryImpl(
         if (isNetConnected) {
             // get data from server
             val actionFromServer = apiService.getAllActions()
+            actionDao.insertOrUpdate(actionFromServer.results)
 
             return actionFromServer.results
 
+        } else {
+            // get data from cache (room database)
+            return actionDao.getAllActions()
         }
 
         return listOf()
@@ -34,9 +54,12 @@ class MovieRepositoryImpl(
         if (isNetConnected) {
             // get data from server
             val fantasy = apiService.getAllFantasy()
+            fantasyDao.insertOrUpdate(fantasy.results)
 
             return fantasy.results
 
+        } else {
+            return fantasyDao.getAllFantasies()
         }
 
         return listOf()
@@ -49,7 +72,11 @@ class MovieRepositoryImpl(
     override suspend fun getAllComedies(isNetConnected: Boolean): List<Comedy> {
         if (isNetConnected) {
             val comediesFromServer = apiService.getAllComedy()
+            comedyDao.insertOrUpdate(comediesFromServer.comedies)
+
             return comediesFromServer.comedies
+        } else {
+            return comedyDao.getAllComedies()
         }
 
         return listOf()
@@ -57,7 +84,11 @@ class MovieRepositoryImpl(
     override suspend fun getAllDramas(isNetConnected: Boolean): List<Drama> {
         if (isNetConnected) {
             val dramasFromServer = apiService.getAllDrama()
+            dramaDao.insertOrUpdate(dramasFromServer.dramas)
+
             return dramasFromServer.dramas
+        } else {
+            return dramaDao.getAllDramas()
         }
 
         return listOf()
@@ -65,7 +96,11 @@ class MovieRepositoryImpl(
     override suspend fun getAllHorrors(isNetConnected: Boolean): List<Horror> {
         if (isNetConnected) {
             val horrorFromServer = apiService.getAllHorror()
+            horrorDao.insertOrUpdate(horrorFromServer.horrors)
+
             return horrorFromServer.horrors
+        } else {
+            return horrorDao.getAllHorrors()
         }
 
         return listOf()
@@ -74,7 +109,11 @@ class MovieRepositoryImpl(
     override suspend fun getAllMysteries(isNetConnected: Boolean): List<Mystery> {
         if (isNetConnected) {
             val mysteryFromServer = apiService.getAllMystery()
+            mysteryDao.insertOrUpdate(mysteryFromServer.mysteries)
+
             return mysteryFromServer.mysteries
+        } else {
+            return mysteryDao.getAllMysteries()
         }
 
         return listOf()
@@ -82,7 +121,11 @@ class MovieRepositoryImpl(
     override suspend fun getAllAdventures(isNetConnected: Boolean): List<Adventure> {
         if (isNetConnected) {
             val adventuresFromServer = apiService.getAllAdventure()
+            adventureDao.insertOrUpdate(adventuresFromServer.adventures)
+
             return adventuresFromServer.adventures
+        } else {
+            return adventureDao.getAllAdvents()
         }
 
         return listOf()
@@ -90,7 +133,11 @@ class MovieRepositoryImpl(
     override suspend fun getAllScientific(isNetConnected: Boolean): List<Scientific> {
         if (isNetConnected) {
             val scientificFromServer = apiService.getAllScientific()
+            scientificDao.insertOrUpdate(scientificFromServer.scientific)
+
             return scientificFromServer.scientific
+        } else {
+            return scientificDao.getAllScientific()
         }
 
         return listOf()

@@ -1,7 +1,14 @@
 package info.fekri.tmdb.model.repository
 
-import info.fekri.tmdb.model.data.*
-import info.fekri.tmdb.model.data.movie.*
+import info.fekri.tmdb.model.data.Popular
+import info.fekri.tmdb.model.data.movie.Action
+import info.fekri.tmdb.model.data.movie.Adventure
+import info.fekri.tmdb.model.data.movie.Comedy
+import info.fekri.tmdb.model.data.movie.Drama
+import info.fekri.tmdb.model.data.movie.Fantasy
+import info.fekri.tmdb.model.data.movie.Horror
+import info.fekri.tmdb.model.data.movie.Mystery
+import info.fekri.tmdb.model.data.movie.Scientific
 
 interface MovieRepository {
 

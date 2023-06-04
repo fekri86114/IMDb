@@ -1,5 +1,7 @@
 package info.fekri.tmdb.model.data.movie
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class DramaResponse(
@@ -13,19 +15,17 @@ data class DramaResponse(
     val totalResults: Int
 )
 
+@Entity("drama_table")
 data class Drama(
-    @SerializedName("adult")
-    val adult: Boolean,
-    @SerializedName("backdrop_path")
-    val backdropPath: String,
-    @SerializedName("genre_ids")
-    val genreIds: List<Int>,
+
+    @PrimaryKey
     @SerializedName("id")
     val id: Int,
+
+    @SerializedName("backdrop_path")
+    val backdropPath: String,
     @SerializedName("original_language")
     val originalLanguage: String,
-    @SerializedName("original_title")
-    val originalTitle: String,
     @SerializedName("overview")
     val overview: String,
     @SerializedName("popularity")

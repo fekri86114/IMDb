@@ -20,6 +20,7 @@ import androidx.navigation.navArgument
 import dev.burnoo.cokoin.Koin
 import dev.burnoo.cokoin.navigation.KoinNavHost
 import info.fekri.tmdb.di.myModules
+import info.fekri.tmdb.ui.feature.category.CategoryScreen
 import info.fekri.tmdb.ui.feature.detail.DetailScreen
 import info.fekri.tmdb.ui.feature.main.MainScreen
 import info.fekri.tmdb.ui.feature.search.SearchScreen
@@ -93,9 +94,4 @@ fun IMDbUi() {
             SearchScreen()
         }
     }
-}
-
-@Composable
-fun CategoryScreen(movieId: String) {
-
 }
