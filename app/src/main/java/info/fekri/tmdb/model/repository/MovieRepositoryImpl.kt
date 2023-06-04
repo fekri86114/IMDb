@@ -1,10 +1,9 @@
 package info.fekri.tmdb.model.repository
 
+import info.fekri.tmdb.model.data.MovieId
 import info.fekri.tmdb.model.data.Popular
 import info.fekri.tmdb.model.data.movie.Action
-import info.fekri.tmdb.model.data.movie.ComedyResponse
 import info.fekri.tmdb.model.data.movie.Fantasy
-import info.fekri.tmdb.model.data.PopularResponse
 import info.fekri.tmdb.model.data.movie.Adventure
 import info.fekri.tmdb.model.data.movie.Comedy
 import info.fekri.tmdb.model.data.movie.Drama
@@ -14,7 +13,7 @@ import info.fekri.tmdb.model.data.movie.Scientific
 import info.fekri.tmdb.model.net.ApiService
 
 class MovieRepositoryImpl(
-    private val apiService: ApiService,
+    private val apiService: ApiService
 ) : MovieRepository {
 
     override suspend fun getAllActions(isNetConnected: Boolean): List<Action> {
@@ -24,7 +23,6 @@ class MovieRepositoryImpl(
             val actionFromServer = apiService.getAllActions()
 
             return actionFromServer.results
-
         }
 
         return listOf()
@@ -34,9 +32,7 @@ class MovieRepositoryImpl(
         if (isNetConnected) {
             // get data from server
             val fantasy = apiService.getAllFantasy()
-
             return fantasy.results
-
         }
 
         return listOf()
@@ -49,6 +45,7 @@ class MovieRepositoryImpl(
     override suspend fun getAllComedies(isNetConnected: Boolean): List<Comedy> {
         if (isNetConnected) {
             val comediesFromServer = apiService.getAllComedy()
+
             return comediesFromServer.comedies
         }
 
@@ -82,6 +79,7 @@ class MovieRepositoryImpl(
     override suspend fun getAllAdventures(isNetConnected: Boolean): List<Adventure> {
         if (isNetConnected) {
             val adventuresFromServer = apiService.getAllAdventure()
+
             return adventuresFromServer.adventures
         }
 
@@ -94,6 +92,10 @@ class MovieRepositoryImpl(
         }
 
         return listOf()
+    }
+
+    override suspend fun getMovieById(id: Int): MovieId {
+        return apiService.getMovieById(movieId = id)
     }
 
 }

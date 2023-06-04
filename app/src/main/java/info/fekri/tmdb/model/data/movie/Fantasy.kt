@@ -1,5 +1,7 @@
 package info.fekri.tmdb.model.data.movie
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class FantasyResponse(
@@ -13,8 +15,10 @@ data class FantasyResponse(
     val totalResults: Int
 )
 
+@Entity("fantasy_table")
 data class Fantasy(
 
+    @PrimaryKey
     @SerializedName("id")
     val id: Int,
 
