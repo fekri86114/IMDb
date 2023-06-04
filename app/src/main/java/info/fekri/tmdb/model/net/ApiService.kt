@@ -14,9 +14,16 @@ import info.fekri.tmdb.util.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
+
+    @GET("movie/{movieId}") // https://themoviedb.org/3/movie/tt0078732?api_key=f882fe7e318f300420b26bdf6e0db009
+    suspend fun getMovieById(
+        @Path("movieId") movieId: Int,
+        @Query("api_key") apiKey: String = API_KEY,
+    ): MovieId
 
     // https://api.themoviedb.org/3/search/movie?api_key=<API_KEY>&query=Jack+Reacher --> query
     @GET("search/movie")

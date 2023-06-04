@@ -1,5 +1,6 @@
 package info.fekri.tmdb.model.repository
 
+import info.fekri.tmdb.model.data.MovieId
 import info.fekri.tmdb.model.data.Popular
 import info.fekri.tmdb.model.data.movie.Action
 import info.fekri.tmdb.model.data.movie.Adventure
@@ -23,5 +24,7 @@ interface MovieRepository {
     suspend fun getAllMysteries(isNetConnected: Boolean): List<Mystery>
     suspend fun getAllAdventures(isNetConnected: Boolean): List<Adventure>
     suspend fun getAllScientific(isNetConnected: Boolean): List<Scientific>
+
+    suspend fun getMovieById(id: Int): MovieId
 
 }

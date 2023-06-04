@@ -80,7 +80,7 @@ fun IMDbUi() {
                 type = NavType.StringType
             })
         ) {
-            CategoryScreen(it.arguments!!.getString(KEY_MOVIE_CATEGORY)!!)
+            CategoryScreen(it.arguments!!.getString(KEY_MOVIE_CATEGORY, "null"))
         }
         composable(
             route = MyScreens.DetailScreen.route + "/{$KEY_MOVIE_ARG}",
@@ -88,7 +88,7 @@ fun IMDbUi() {
                 type = NavType.IntType
             })
         ) {
-            DetailScreen(it.arguments!!.getInt(KEY_MOVIE_ARG))
+            DetailScreen(it.arguments!!.getInt(KEY_MOVIE_ARG, -1))
         }
         composable(route = MyScreens.SearchScreen.route) {
             SearchScreen()
