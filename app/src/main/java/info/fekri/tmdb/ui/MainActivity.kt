@@ -20,6 +20,7 @@ import androidx.navigation.navArgument
 import dev.burnoo.cokoin.Koin
 import dev.burnoo.cokoin.navigation.KoinNavHost
 import info.fekri.tmdb.di.myModules
+import info.fekri.tmdb.ui.feature.category.CategoryScreen
 import info.fekri.tmdb.ui.feature.detail.DetailScreen
 import info.fekri.tmdb.ui.feature.main.MainScreen
 import info.fekri.tmdb.ui.feature.search.SearchScreen
@@ -74,12 +75,12 @@ fun IMDbUi() {
             MainScreen()
         }
         composable(
-            route = MyScreens.CategoryScreen.route + "/$KEY_MOVIE_CATEGORY",
+            route = MyScreens.CategoryScreen.route + "/{$KEY_MOVIE_CATEGORY}",
             arguments = listOf(navArgument(KEY_MOVIE_CATEGORY) {
                 type = NavType.StringType
             })
         ) {
-            CategoryScreen(it.arguments!!.getString(KEY_MOVIE_CATEGORY)!!)
+            CategoryScreen(it.arguments!!.getString(KEY_MOVIE_CATEGORY, "null"))
         }
         composable(
             route = MyScreens.DetailScreen.route + "/{$KEY_MOVIE_ARG}",
@@ -87,15 +88,10 @@ fun IMDbUi() {
                 type = NavType.IntType
             })
         ) {
-            DetailScreen(it.arguments!!.getInt(KEY_MOVIE_ARG))
+            DetailScreen(it.arguments!!.getInt(KEY_MOVIE_ARG, -1))
         }
         composable(route = MyScreens.SearchScreen.route) {
             SearchScreen()
         }
     }
-}
-
-@Composable
-fun CategoryScreen(movieId: String) {
-
 }

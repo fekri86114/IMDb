@@ -17,21 +17,30 @@ fun styleLimitedText(text: String, length: Int): String {
     return text
 }
 
-fun isUserFromIran(ipAddress: String): Boolean {
+fun stylePrice(oldPrice: String): String {
 
-    val url = "https://api.ipapi.com/$ipAddress?access_key=$IP_API_KEY"
+    if (oldPrice.length > 3) {
+        val reversed = oldPrice.reversed()
+        var newPrice = ""
+        for (i in oldPrice.indices) {
+            newPrice += reversed[i]
+            if ((i+1) % 3 == 0) {
+                newPrice += ','
+            }
+        }
+        val readyToGo = newPrice.reversed()
 
-    val client = OkHttpClient()
-    val request = Request.Builder().url(url).build()
+        // if you don't use it, when the number is (for example) 532,234
+        // it will be like this: ,532,234
+        // so we need it :-)
+        if (readyToGo.first() == ',') {
+            return readyToGo.substring(1) + "$"
+        }
 
-    client.newCall(request).execute().use { response ->
-        val jsonString = response.body?.string()
-        val jsonObject = JSONObject(jsonString!!)
-        val country = jsonObject.getString("country_code2")
-
-        return country == "IR"
+        return "$readyToGo$"
     }
 
+    return "$oldPrice$"
 }
 
 

@@ -1,33 +1,31 @@
-package info.fekri.tmdb.model.data
+package info.fekri.tmdb.model.data.movie
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-data class MovieByQuery(
+data class DramaResponse(
     @SerializedName("page")
     val page: Int,
     @SerializedName("results")
-    val results: List<QueryResult>,
+    val dramas: List<Drama>,
     @SerializedName("total_pages")
     val totalPages: Int,
     @SerializedName("total_results")
     val totalResults: Int
 )
 
-@Entity("movie_table")
-data class QueryResult(
-    @SerializedName("backdrop_path")
-    val backdropPath: String,
+@Entity("drama_table")
+data class Drama(
 
     @PrimaryKey
     @SerializedName("id")
     val id: Int,
 
+    @SerializedName("backdrop_path")
+    val backdropPath: String,
     @SerializedName("original_language")
     val originalLanguage: String,
-    @SerializedName("original_title")
-    val originalTitle: String,
     @SerializedName("overview")
     val overview: String,
     @SerializedName("popularity")

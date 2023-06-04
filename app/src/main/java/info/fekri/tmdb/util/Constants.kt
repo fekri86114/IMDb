@@ -1,6 +1,7 @@
 package info.fekri.tmdb.util
 
 import info.fekri.tmdb.R
+import info.fekri.tmdb.model.data.MovieId
 import info.fekri.tmdb.model.data.QueryResult
 
 const val API_KEY = "f882fe7e318f300420b26bdf6e0db009"
@@ -26,13 +27,38 @@ val EMPTY_QUERY_RESULT = QueryResult(
     0
 )
 
-
-val MOVIE_CATEGORY_LIST: List<Pair<String, Int>> = listOf(
+val CATEGORY_LIST: List<Pair<String, Int>> = listOf(
     Pair("Action", R.drawable.img_action),
     Pair("Comedy", R.drawable.img_comedy),
     Pair("Drama", R.drawable.img_drama),
     Pair("Fantasy", R.drawable.img_fantasey),
     Pair("Horror", R.drawable.img_horror),
     Pair("Mystery", R.drawable.img_mystery),
-    Pair("Science Fiction.", R.drawable.img_science_fiction)
+    Pair("Adventure", R.drawable.img_adventure),
+    Pair("Scientific", R.drawable.img_science_fiction)
+)
+
+val EMPTY_MOVIE_ID = MovieId(
+    false,
+    "",
+    "",
+    0,
+    "",
+    0,
+    "",
+    "",
+    "",
+    "",
+    0.0,
+    "",
+    listOf(),
+    "",
+    0,
+    0,
+    "",
+    "",
+    "",
+    false,
+    0.0,
+    0
 )
