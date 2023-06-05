@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,7 +34,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,14 +46,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
-import info.fekri.tmdb.R
 import info.fekri.tmdb.model.data.Popular
 import info.fekri.tmdb.model.data.movie.Action
 import info.fekri.tmdb.model.data.movie.Adventure
@@ -128,64 +121,68 @@ fun MainScreen() {
         val dataAdventureState = viewModel.dataAdventures
         val dataScientificState = viewModel.dataScientific
 
+        if (dataActionState.value.isNotEmpty()) {
 
-        ActionSubject(dataActionState.value) {
-            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-        }
 
-        FantasySubject(data = dataFantasyState.value) {
-            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-        }
+            ActionSubject(dataActionState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
 
-        // popular slides
-        PopularMovieSlides(dataPopularState.value, pagerState) {
-            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-        }
+            FantasySubject(data = dataFantasyState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
 
-        // ---
+            // popular slides
+            PopularMovieSlides(dataPopularState.value, pagerState) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
 
-        ComedySubject(data = dataComedyState.value) {
-            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-        }
+            // ---
 
-        DramaSubject(data = dataDramaState.value) {
-            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-        }
+            ComedySubject(data = dataComedyState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
 
-        HorrorMovieSlides(
-            horrors = dataHorrorState.value,
-            pagerState = pagerState
-        ) {
-            navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
-        }
+            DramaSubject(data = dataDramaState.value) {
+                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            }
 
-        // ---
-        if (viewModel.showLoadMoreButton.value) {
-            TextButton(
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 24.dp),
-                onClick = { viewModel.loadMoreData(NetworkChecker(context).isInternetConnected) }
+            HorrorMovieSlides(
+                horrors = dataHorrorState.value,
+                pagerState = pagerState
             ) {
-                Text(
-                    text = "Load More...", textAlign = TextAlign.Center
-                )
-            }
-        }
-
-        if (!viewModel.showLoadMoreButton.value) {
-            MysterySubject(dataMysteryState.value) {
                 navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
             }
 
-            AdventureSubject(dataAdventureState.value) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            // ---
+            if (viewModel.showLoadMoreButton.value) {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f)
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 24.dp),
+                    onClick = { viewModel.loadMoreData(NetworkChecker(context).isInternetConnected) }
+                ) {
+                    Text(
+                        text = "Load More...", textAlign = TextAlign.Center
+                    )
+                }
             }
 
-            ScientificSlides(dataScientificState.value, pagerState) {
-                navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+            if (!viewModel.showLoadMoreButton.value) {
+                MysterySubject(dataMysteryState.value) {
+                    navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+                }
+
+                AdventureSubject(dataAdventureState.value) {
+                    navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+                }
+
+                ScientificSlides(dataScientificState.value, pagerState) {
+                    navigation.navigate(MyScreens.DetailScreen.route + "/" + it)
+                }
             }
+
         }
 
     }
