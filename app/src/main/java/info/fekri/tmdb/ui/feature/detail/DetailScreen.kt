@@ -72,11 +72,7 @@ fun DetailScreen(movieId: Int) {
                 navigation.popBackStack()
             },
             onSearchIconPressed = {
-                navigation.navigate(MyScreens.SearchScreen.route) {
-                    popUpTo(MyScreens.DetailScreen.route){
-                        inclusive = true
-                    }
-                }
+                navigation.navigate(MyScreens.SearchScreen.route)
             }
         )
         if (viewModel.showProgress.value) {
@@ -303,7 +299,7 @@ fun DetailTopToolbar(onBackIconPressed: () -> Unit, onSearchIconPressed: () -> U
             }
         },
         title = {
-            Text(text = "Detail")
+            Text(text = "About")
         },
         actions = {
             IconButton(onClick = {
