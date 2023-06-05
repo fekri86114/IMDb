@@ -105,7 +105,8 @@ fun MainScreen() {
 
         CategoryBar(categoryList = CATEGORY_LIST) {
             // go to category screen
-            navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
+            if (NetworkChecker(context).isInternetConnected)
+                navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
         }
 
         // ---
@@ -229,6 +230,7 @@ fun PopularItem(pop: Popular, onPopularItemClicked: (Int) -> Unit) {
             .clickable { onPopularItemClicked.invoke(pop.id) },
         elevation = 4.dp,
         shape = Shapes.medium,
+        backgroundColor = CoverBlue
     ) {
         Column(
             verticalArrangement = Arrangement.Center
@@ -484,14 +486,14 @@ fun CategoryBar(categoryList: List<Pair<String, Int>>, onCategoryClicked: (Strin
         contentPadding = PaddingValues(end = 8.dp)
     ) {
         items(categoryList.size) {
-            CategoryItem(categoryList[it], onCategoryClicked)
+            CategoryItemsData(categoryList[it], onCategoryClicked)
         }
     }
 
 }
 
 @Composable
-fun CategoryItem(subject: Pair<String, Int>, onCategoryClicked: (String) -> Unit) {
+fun CategoryItemsData(subject: Pair<String, Int>, onCategoryClicked: (String) -> Unit) {
     Column(
         modifier = Modifier
             .padding(start = 8.dp)
@@ -738,6 +740,7 @@ fun HorrorItem(horror: Horror, onHorrorItemClicked: (Int) -> Unit) {
             .clickable { onHorrorItemClicked.invoke(horror.id) },
         elevation = 4.dp,
         shape = Shapes.medium,
+        backgroundColor = CoverBlue
     ) {
         Column(
             verticalArrangement = Arrangement.Center
@@ -1025,6 +1028,7 @@ fun ScientificItem(scientific: Scientific, onScientificItemClicked: (Int) -> Uni
             .clickable { onScientificItemClicked.invoke(scientific.id) },
         elevation = 4.dp,
         shape = Shapes.medium,
+        backgroundColor = CoverBlue
     ) {
         Column(
             verticalArrangement = Arrangement.Center

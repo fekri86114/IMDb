@@ -1,10 +1,7 @@
 package info.fekri.tmdb.ui.feature.detail
 
-import android.app.DownloadManager
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,7 +50,6 @@ import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.POSTER_BASE_URL
 import info.fekri.tmdb.util.downloadImageNew
 import info.fekri.tmdb.util.stylePrice
-import java.io.File
 
 @Composable
 fun DetailScreen(movieId: Int) {
@@ -77,7 +73,9 @@ fun DetailScreen(movieId: Int) {
             },
             onSearchIconPressed = {
                 navigation.navigate(MyScreens.SearchScreen.route) {
-                    popUpTo(MyScreens.DetailScreen.route)
+                    popUpTo(MyScreens.DetailScreen.route){
+                        inclusive = true
+                    }
                 }
             }
         )

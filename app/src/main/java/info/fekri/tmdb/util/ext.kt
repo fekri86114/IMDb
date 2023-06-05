@@ -50,7 +50,6 @@ fun stylePrice(oldPrice: String): String {
 }
 
 fun downloadImageNew(filename: String, downloadUrlOfImage: String, context: Context) {
-
     try {
         val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
         val downloadUri = Uri.parse(downloadUrlOfImage)
@@ -69,4 +68,9 @@ fun downloadImageNew(filename: String, downloadUrlOfImage: String, context: Cont
     } catch (e: Exception) {
         Toast.makeText(context, "Image download failed.", Toast.LENGTH_SHORT).show()
     }
+}
+
+fun Int.floorMod(other: Int): Int = when (other) {
+    0 -> this
+    else -> this - floorDiv(other) * other
 }

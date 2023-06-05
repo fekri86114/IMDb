@@ -11,6 +11,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
@@ -19,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import info.fekri.tmdb.ui.theme.Blue
+import info.fekri.tmdb.util.MyScreens
 
 @Composable
 fun SearchScreen() {
@@ -35,7 +38,11 @@ fun SearchScreen() {
     ) {
 
         SearchTopToolbar {
-            navigation.popBackStack()
+            navigation.navigate(MyScreens.MainScreen.route) {
+                popUpTo(MyScreens.MainScreen.route) {
+                    inclusive = true
+                }
+            }
         }
 
         // will complete later
@@ -45,19 +52,14 @@ fun SearchScreen() {
 }
 
 @Composable
-fun SearchTopToolbar(onBackIconPressed: () -> Unit) {
+fun SearchTopToolbar(onHomeIconPressed: () -> Unit) {
     TopAppBar(
         elevation = 0.dp,
         backgroundColor = Blue,
-        navigationIcon = {
-            IconButton(onClick = {
-                onBackIconPressed.invoke()
-            }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null
-                )
-            }
+        actions = {
+                  IconButton(onClick = onHomeIconPressed) {
+                      Icon(imageVector = Icons.Default.Home, contentDescription = null)
+                  }
         },
         title = {
             Text(text = "IMDb Search")

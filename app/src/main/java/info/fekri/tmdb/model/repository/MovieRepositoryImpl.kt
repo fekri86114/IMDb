@@ -2,11 +2,12 @@ package info.fekri.tmdb.model.repository
 
 import info.fekri.tmdb.model.data.MovieId
 import info.fekri.tmdb.model.data.Popular
+import info.fekri.tmdb.model.data.QueryResult
 import info.fekri.tmdb.model.data.movie.Action
-import info.fekri.tmdb.model.data.movie.Fantasy
 import info.fekri.tmdb.model.data.movie.Adventure
 import info.fekri.tmdb.model.data.movie.Comedy
 import info.fekri.tmdb.model.data.movie.Drama
+import info.fekri.tmdb.model.data.movie.Fantasy
 import info.fekri.tmdb.model.data.movie.Horror
 import info.fekri.tmdb.model.data.movie.Mystery
 import info.fekri.tmdb.model.data.movie.Scientific
@@ -96,6 +97,10 @@ class MovieRepositoryImpl(
 
     override suspend fun getMovieById(id: Int): MovieId {
         return apiService.getMovieById(movieId = id)
+    }
+    override suspend fun getMovieByQuery(query: String): List<QueryResult> {
+        val dataToSet = apiService.getMovieByQuery(query = query)
+        return dataToSet.results
     }
 
 }
