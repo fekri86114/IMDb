@@ -1,12 +1,18 @@
 package info.fekri.tmdb.util
 
 import android.app.Application
+import android.app.DownloadManager
+import android.content.Context
+import android.net.Uri
 import android.net.http.HttpResponseCache.install
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import kotlinx.coroutines.CoroutineExceptionHandler
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
+import java.io.File
 
 val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
     Log.v("error", "Error -> ${throwable.message}")
@@ -43,4 +49,28 @@ fun stylePrice(oldPrice: String): String {
     return "$oldPrice$"
 }
 
+fun downloadImageNew(filename: String, downloadUrlOfImage: String, context: Context) {
+    try {
+        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
+        val downloadUri = Uri.parse(downloadUrlOfImage)
+        val request = DownloadManager.Request(downloadUri)
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+            .setAllowedOverRoaming(false)
+            .setTitle(filename)
+            .setMimeType("image/jpeg") // Your file type.
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setDestinationInExternalPublicDir(
+                Environment.DIRECTORY_PICTURES,
+                File.separator + filename + ".jpg"
+            )
+        dm!!.enqueue(request)
+        Toast.makeText(context, "Image download started.", Toast.LENGTH_SHORT).show()
+    } catch (e: Exception) {
+        Toast.makeText(context, "Image download failed.", Toast.LENGTH_SHORT).show()
+    }
+}
 
+fun Int.floorMod(other: Int): Int = when (other) {
+    0 -> this
+    else -> this - floorDiv(other) * other
+}

@@ -1,10 +1,7 @@
 package info.fekri.tmdb.ui.feature.detail
 
-import android.app.DownloadManager
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,8 +48,8 @@ import info.fekri.tmdb.ui.theme.Shapes
 import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.POSTER_BASE_URL
+import info.fekri.tmdb.util.downloadImageNew
 import info.fekri.tmdb.util.stylePrice
-import java.io.File
 
 @Composable
 fun DetailScreen(movieId: Int) {
@@ -75,9 +72,7 @@ fun DetailScreen(movieId: Int) {
                 navigation.popBackStack()
             },
             onSearchIconPressed = {
-                navigation.navigate(MyScreens.SearchScreen.route) {
-                    popUpTo(MyScreens.DetailScreen.route)
-                }
+                navigation.navigate(MyScreens.SearchScreen.route)
             }
         )
         if (viewModel.showProgress.value) {
@@ -104,7 +99,7 @@ fun MovieDetailShow(data: MovieId) {
 
         BigPictureMovieId(data.posterPath) {
             downloadImageNew(
-                "IMAGE_IMDb Movies",
+                "${data.title}_Image",
                 it,
                 context
             )
@@ -128,27 +123,7 @@ fun MovieDetailShow(data: MovieId) {
 
 }
 
-private fun downloadImageNew(filename: String, downloadUrlOfImage: String, context: Context) {
 
-    try {
-        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
-        val downloadUri = Uri.parse(downloadUrlOfImage)
-        val request = DownloadManager.Request(downloadUri)
-        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-            .setAllowedOverRoaming(false)
-            .setTitle(filename)
-            .setMimeType("image/jpeg") // Your file type. You can use this code to download other file types also.
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_PICTURES,
-                File.separator + filename + ".jpg"
-            )
-        dm!!.enqueue(request)
-        Toast.makeText(context, "Image download started.", Toast.LENGTH_SHORT).show()
-    } catch (e: Exception) {
-        Toast.makeText(context, "Image download failed.", Toast.LENGTH_SHORT).show()
-    }
-}
 
 @Composable
 fun MoreDetailButton(onHomepageClicked: () -> Unit) {
@@ -324,7 +299,7 @@ fun DetailTopToolbar(onBackIconPressed: () -> Unit, onSearchIconPressed: () -> U
             }
         },
         title = {
-            Text(text = "Detail")
+            Text(text = "About")
         },
         actions = {
             IconButton(onClick = {
