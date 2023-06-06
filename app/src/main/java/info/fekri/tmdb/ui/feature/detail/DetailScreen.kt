@@ -276,8 +276,6 @@ fun BigPictureMovieId(posterPath: String, onImageClicked: (String) -> Unit) {
             }
         }
     }
-
-
 }
 
 

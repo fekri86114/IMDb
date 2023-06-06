@@ -4,8 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import info.fekri.tmdb.model.data.QueryResult
-import info.fekri.tmdb.model.repository.MovieRepository
-import info.fekri.tmdb.util.EMPTY_QUERY_RESULT
+import info.fekri.tmdb.model.repository.movie.MovieRepository
 import info.fekri.tmdb.util.coroutineExceptionHandler
 import kotlinx.coroutines.launch
 

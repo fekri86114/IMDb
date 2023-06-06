@@ -1,4 +1,4 @@
-package info.fekri.tmdb.model.repository
+package info.fekri.tmdb.model.repository.movie
 
 import info.fekri.tmdb.model.data.MovieId
 import info.fekri.tmdb.model.data.Popular
