@@ -7,6 +7,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -54,6 +55,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
@@ -98,7 +101,29 @@ fun SearchScreen() {
     ) {
 
         SearchTopToolbar {
-            navigation.navigate(MyScreens.MainScreen.route)
+
+            if (
+                viewModel.dataSearch.value.isNotEmpty() &&
+                viewModel.search.value.toString().isNotEmpty() ||
+                viewModel.search.value.toString().isNotBlank()
+            ) {
+                Toast.makeText(
+                    context,
+                    "Cleared data before going ...",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                clearInput(viewModel)
+
+                Toast.makeText(
+                    context,
+                    "You can press-again to go :-)",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                navigation.navigate(MyScreens.MainScreen.route)
+            }
+
         }
         if (viewModel.showProgress.value) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = Blue)
@@ -108,9 +133,10 @@ fun SearchScreen() {
 
         /* show data after getting false the progressbar */
         if (viewModel.showContent.value) {
-            ShowDataSearch(viewModel.dataSearch.value)
+            ShowDataSearch(viewModel.dataSearch.value, navigation)
         }
 
+        // check data-is-empty when you click on back-arrow
         BackHandler() {
             if (
                 viewModel.dataSearch.value.isNotEmpty() &&
@@ -122,8 +148,9 @@ fun SearchScreen() {
                     "Cleared data before going ...",
                     Toast.LENGTH_SHORT
                 ).show()
-                clearInput(viewModel) /* clears data when you come again and lets you to
-     start a new search :-) */
+
+                clearInput(viewModel)
+
                 Toast.makeText(
                     context,
                     "You can press-again to go :-)",
@@ -140,7 +167,7 @@ fun SearchScreen() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ShowDataSearch(data: List<QueryResult>) {
+fun ShowDataSearch(data: List<QueryResult>, navigation: NavController) {
     val pageCount = data.size
     val startIndex = Int.MAX_VALUE / 2
     val pagerState = rememberPagerState(initialPage = startIndex)
@@ -156,14 +183,14 @@ fun ShowDataSearch(data: List<QueryResult>) {
             .fillMaxWidth()
             .padding(top = 16.dp)
     ) {
-        ShowDataSearchItem(data = data[it])
+        ShowDataSearchItem(data = data[it], navigation)
     }
 
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ShowDataSearchItem(data: QueryResult) {
+fun ShowDataSearchItem(data: QueryResult, navigation: NavController) {
     var showContent by remember { mutableStateOf(false) }
     val transition = updateTransition(showContent, label = "")
 
@@ -176,7 +203,10 @@ fun ShowDataSearchItem(data: QueryResult) {
             modifier = Modifier
                 .width(300.dp)
                 .height(240.dp)
-                .padding(top = 10.dp),
+                .padding(top = 10.dp)
+                .clickable {
+                    navigation.navigate(MyScreens.DetailScreen.route + "/" + data.id)
+                },
             backgroundColor = CoverBlue,
             shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
         ) {
@@ -365,6 +395,9 @@ fun SearchTopToolbar(onHomeIconPressed: () -> Unit) {
     )
 }
 
+/**
+ * [clearInput] clears data before you go anywhere
+ *  */
 fun clearInput(viewModel : SearchViewModel) {
     viewModel.search.value = ""
     viewModel.dataSearch.value = listOf()
