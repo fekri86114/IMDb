@@ -1,5 +1,7 @@
 package info.fekri.tmdb.ui.feature.search
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -82,8 +84,10 @@ fun SearchScreenPreview() {
 fun SearchScreen() {
     val context = LocalContext.current
     val navigation = getNavController()
+
     val uiController = rememberSystemUiController()
     SideEffect { uiController.setStatusBarColor(Blue) }
+
     val viewModel = getNavViewModel<SearchViewModel>()
 
     Column(
@@ -105,6 +109,24 @@ fun SearchScreen() {
         /* show data after getting false the progressbar */
         if (viewModel.showContent.value) {
             ShowDataSearch(viewModel.dataSearch.value)
+        }
+
+        BackHandler() {
+            if (
+                viewModel.dataSearch.value.isNotEmpty() &&
+                viewModel.search.value.toString().isNotEmpty() ||
+                viewModel.search.value.toString().isNotBlank()
+            ) {
+                Toast.makeText(
+                    context,
+                    "Cleared data before going ...",
+                    Toast.LENGTH_SHORT
+                ).show()
+                clearInput(viewModel) /* clears data when you come again and lets you to
+     start a new search :-) */
+            } else {
+                navigation.popBackStack()
+            }
         }
 
     }
@@ -202,14 +224,6 @@ fun ShowDataSearchItem(data: QueryResult) {
                     RowTextItemStyle(first = "Popularity", second = data.popularity.toString())
                 }
 
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth(0f)
-                        .height(4.dp)
-                        .padding(vertical = 4.dp),
-                    color = Color.White
-                ) {}
-
                 if (showContent) {
                     val visibleState = transition.animateDp(
                         transitionSpec = {
@@ -252,16 +266,13 @@ fun ShowDataSearchItem(data: QueryResult) {
                         }
 
                     }
-
                 }
-
             }
 
         }
     }
 
 }
-
 
 @Composable
 fun MovieSearchBar(viewModel: SearchViewModel) {
@@ -333,7 +344,6 @@ fun MainSearchTextField(
 
 }
 
-
 @Composable
 fun SearchTopToolbar(onHomeIconPressed: () -> Unit) {
     TopAppBar(
@@ -348,4 +358,9 @@ fun SearchTopToolbar(onHomeIconPressed: () -> Unit) {
             Text(text = "IMDb Search")
         }
     )
+}
+
+fun clearInput(viewModel : SearchViewModel) {
+    viewModel.search.value = ""
+    viewModel.dataSearch.value = listOf()
 }

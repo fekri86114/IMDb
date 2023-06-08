@@ -1,17 +1,12 @@
 package info.fekri.tmdb.util
 
-import android.app.Application
 import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
-import android.net.http.HttpResponseCache.install
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.CoroutineExceptionHandler
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
 import java.io.File
 
 val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -68,9 +63,4 @@ fun downloadImageNew(filename: String, downloadUrlOfImage: String, context: Cont
     } catch (e: Exception) {
         Toast.makeText(context, "Image download failed.", Toast.LENGTH_SHORT).show()
     }
-}
-
-fun Int.floorMod(other: Int): Int = when (other) {
-    0 -> this
-    else -> this - floorDiv(other) * other
 }
