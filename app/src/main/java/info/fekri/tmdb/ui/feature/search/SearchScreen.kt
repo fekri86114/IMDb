@@ -124,6 +124,11 @@ fun SearchScreen() {
                 ).show()
                 clearInput(viewModel) /* clears data when you come again and lets you to
      start a new search :-) */
+                Toast.makeText(
+                    context,
+                    "You can press-again to go :-)",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
                 navigation.popBackStack()
             }
