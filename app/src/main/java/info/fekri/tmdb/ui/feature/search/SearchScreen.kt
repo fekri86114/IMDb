@@ -56,7 +56,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController

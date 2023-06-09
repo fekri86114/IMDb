@@ -1,7 +1,6 @@
 package info.fekri.tmdb.ui.feature.category
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,24 +26,19 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
-import info.fekri.tmdb.R
 import info.fekri.tmdb.model.data.QueryResult
-import info.fekri.tmdb.model.data.movie.Mystery
 import info.fekri.tmdb.ui.feature.detail.RowTextItemStyle
 import info.fekri.tmdb.ui.theme.Blue
 import info.fekri.tmdb.ui.theme.CoverBlue
 import info.fekri.tmdb.ui.theme.ItemBackground
-import info.fekri.tmdb.ui.theme.Shapes
 import info.fekri.tmdb.ui.theme.WhiteCover
 import info.fekri.tmdb.util.MyScreens
 import info.fekri.tmdb.util.POSTER_BASE_URL
