@@ -12,7 +12,7 @@ import info.fekri.tmdb.model.data.movie.Fantasy
 import info.fekri.tmdb.model.data.movie.Horror
 import info.fekri.tmdb.model.data.movie.Mystery
 import info.fekri.tmdb.model.data.movie.Scientific
-import info.fekri.tmdb.model.repository.MovieRepository
+import info.fekri.tmdb.model.repository.movie.MovieRepository
 import info.fekri.tmdb.util.coroutineExceptionHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay

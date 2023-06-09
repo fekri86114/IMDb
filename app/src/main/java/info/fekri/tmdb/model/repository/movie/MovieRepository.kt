@@ -1,7 +1,8 @@
-package info.fekri.tmdb.model.repository
+package info.fekri.tmdb.model.repository.movie
 
 import info.fekri.tmdb.model.data.MovieId
 import info.fekri.tmdb.model.data.Popular
+import info.fekri.tmdb.model.data.QueryResult
 import info.fekri.tmdb.model.data.movie.Action
 import info.fekri.tmdb.model.data.movie.Adventure
 import info.fekri.tmdb.model.data.movie.Comedy
@@ -26,5 +27,6 @@ interface MovieRepository {
     suspend fun getAllScientific(isNetConnected: Boolean): List<Scientific>
 
     suspend fun getMovieById(id: Int): MovieId
+    suspend fun getMovieByQuery(query: String): List<QueryResult>
 
 }

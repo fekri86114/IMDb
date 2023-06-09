@@ -1,7 +1,5 @@
 package info.fekri.tmdb.ui
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
@@ -12,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
